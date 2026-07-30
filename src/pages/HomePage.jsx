@@ -1,42 +1,141 @@
-import React, { useState, useEffect, useRef } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { useEffect, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { ArrowRight, FileText, Search, Shield } from 'lucide-react'
+
+import { useEnquiry } from '@/components/enquiry/EnquiryProvider'
+import Badge from '@/components/system/Badge'
+import Container from '@/components/system/Container'
+import Reveal from '@/components/system/Reveal'
+import Section from '@/components/system/Section'
+import SectionHeading from '@/components/system/SectionHeading'
+import SelectionGroup, { useSelectionMember } from '@/components/system/SelectionGroup'
+import TechBackdrop from '@/components/system/TechBackdrop'
+import { Button } from '@/components/ui/button'
 import {
-  ArrowRight, Search, Shield,
-  Briefcase, Truck, Factory, Recycle, ShoppingCart, Sparkles, Wrench,
-  Star, FileText, Send
-} from 'lucide-react'
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import { useMotionSafe } from '@/hooks/useMotionSafe'
+import { cn } from '@/lib/utils'
 
-function Badge({ children }) {
-  return (
-    <span className="inline-flex items-center rounded-full border border-slate-200 bg-white/70 px-3 py-1 text-xs font-semibold text-slate-700">
-      {children}
-    </span>
-  )
-}
+/**
+ * `/home-old` - a Legacy_Route page.
+ *
+ * `LegacyLayout` (applied in `App.jsx`) owns the legacy header, the `main`
+ * landmark, and the compact footer, so this page renders content only and
+ * declares no chrome of its own (Requirements 8.1, 2.1).
+ *
+ * Everything a visitor could do here before the redesign still exists, with the
+ * same destination or outcome (Requirements 8.2, 11.1, 11.6):
+ *
+ * - the service selector, now a `SelectionGroup` of `Badge`-styled real buttons
+ *   that expose their state through `aria-pressed`, so exactly one service can
+ *   be selected at a time and assistive technology is told which one;
+ * - the selected-service feedback, which - as before - appears only after a
+ *   chip has been activated and never on first paint;
+ * - all seven case studies with their badges, titles, subtitles, problem lists,
+ *   solution lists, impact lists, and the recognition note;
+ * - the `id="work"` anchor on the case-study band, which the legacy header's
+ *   "Our Work" item scrolls to, plus the same hash handling on mount;
+ * - the navigation actions, all still links: Explore Solutions and Partner With
+ *   Us to `/partner`, Enquire Now and Enquire For Work to `/enquire`
+ *   (Requirement 11.8);
+ * - the two enquiry actions that opened the enquiry workflow, Request A Quote
+ *   and the fixed Book A Call, now routed through the shared opener so the
+ *   workflow has a single activation surface.
+ *
+ * Motion (Requirement 9.5): activating a chip briefly rings the Enquire Now
+ * action, as the pre-redesign pulse did. The ring is decorative reinforcement,
+ * so it is not applied at all while Reduced_Motion_Preference is active, and
+ * the on-mount hash scroll falls back to an instant jump to the same anchor.
+ * Selecting a service still shows its own state (chip fill, underline, and the
+ * selected-service line) either way.
+ *
+ * Heading structure (Requirement 10.5): one `h1` in the hero, level 2 for each
+ * band, level 3 per case study, level 4 for the two panels inside a case study,
+ * and level 5 for the notes inside the solution panel - the same gap-free
+ * outline the page had before. The Why Us entries and the rating labels are not
+ * headings, exactly as before.
+ *
+ * Presentation is token-only: no literal color value in any form, every size
+ * and space from the token scales (Requirements 1.1, 1.2). The Brand_Accent
+ * appears only on conversion actions (Requirement 1.3).
+ *
+ * Requirements: 1.1, 1.2, 8.1, 8.2, 9.5, 10.5, 11.1, 11.6
+ */
 
-function FeatureList({ items, dark = false }) {
-  return (
-    <ul className={`space-y-3 text-sm ${dark ? 'text-white/80' : 'text-slate-700'}`}>
-      {items.map((item) => (
-        <li key={item} className="flex gap-3">
-          <span className={`mt-1.5 h-2 w-2 rounded-full ${dark ? 'bg-sky-300' : 'bg-sky-500'}`} />
-          <span>{item}</span>
-        </li>
-      ))}
-    </ul>
-  )
-}
+/** How long the Enquire Now ring stays on after a chip activation, in ms. */
+export const PULSE_MS = 1400
 
-function CardSection({ children }) {
-  return (
-    <section className="relative overflow-hidden rounded-[2rem] border border-slate-200 bg-white p-8 shadow-sm md:p-12">
-      <div className="relative">{children}</div>
-    </section>
-  )
-}
+/** Entrance stagger per card, in ms. `Reveal` clamps the total for us. */
+const CARD_STAGGER_MS = 60
 
-const projects = [
+/** Shared icon tile for the Why Us entries. */
+const ICON_TILE =
+  'inline-flex h-[var(--space-7)] w-[var(--space-7)] shrink-0 items-center justify-center rounded-sm bg-tech-cyan/10 text-tech-cyan'
+
+/** Case-study panel heading role: one step below the case-study title. */
+const PANEL_TITLE =
+  'text-[length:var(--text-body)] font-semibold leading-snug tracking-[-0.01em] text-content'
+
+/** Note heading inside a case-study panel. */
+const NOTE_TITLE =
+  'text-[length:var(--text-label)] font-semibold tracking-[0.01em] text-content'
+
+/** Body copy inside a case-study panel. */
+const PANEL_BODY =
+  'text-[length:var(--text-label)] leading-relaxed text-content-muted'
+
+/** The services a visitor can pick from, unchanged from the baseline. */
+export const services = [
+  'Coding',
+  'Editing',
+  'Social media manager',
+  'Brand building',
+  'Content creation',
+  'Advertisements',
+  'Software and tech',
+  'Financing',
+  'Auditing',
+  'Interactive dashboard and analytics',
+  'Startup building',
+  'Ecommerce',
+  'Dropshipping',
+]
+
+/** The third-party rating badges from the baseline hero. */
+export const ratings = [
+  { initial: 'D', name: 'DESIGNRUSH', score: '4.8 Star Ratings' },
+  { initial: 'C', name: 'Clutch', score: '4.9/5.0 ★★★★★' },
+]
+
+/** The Why Us entries, unchanged from the baseline. */
+export const whyUs = [
+  { title: 'On-time delivery', desc: 'Committed timelines and clear milestones.' },
+  {
+    title: 'No full advanced payment',
+    desc: 'Work starts without demanding full payment upfront.',
+  },
+  {
+    title: 'Industry expertise free of cost',
+    desc: 'Consulting, planning, and guidance included.',
+  },
+  {
+    title: 'Industry cheapest price',
+    desc: 'If anyone matches or goes below it (verified), we will do the entire work for free.',
+    emphasis: true,
+  },
+]
+
+/**
+ * The case studies, unchanged from the baseline. `overview` is retained as the
+ * fallback for a case study without a problem list; every entry has one today,
+ * so - exactly as before - no overview string is rendered.
+ */
+export const projects = [
   {
     id: 'fog-safety-ai',
     badge: 'Featured Project',
@@ -110,179 +209,402 @@ const projects = [
   },
 ]
 
-export default function HomePage() {
-  const [selected, setSelected] = useState(null)
-  const [pulse, setPulse] = useState(false)
-  const timerRef = useRef(null)
+/** Token-bulleted list used by every case-study panel. */
+function FeatureList({ items }) {
+  return (
+    <ul className={cn('flex list-none flex-col gap-[var(--space-3)] p-0', PANEL_BODY)}>
+      {items.map((item) => (
+        <li key={item} className="flex gap-[var(--space-3)]">
+          <span
+            aria-hidden="true"
+            className="mt-[var(--space-2)] h-[var(--space-2)] w-[var(--space-2)] shrink-0 rounded-[var(--radius-pill)] bg-tech-cyan"
+          />
+          <span>{item}</span>
+        </li>
+      ))}
+    </ul>
+  )
+}
 
-  useEffect(() => {
-    if (window.location.hash === '#work') {
-      setTimeout(() => document.getElementById('work')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 0)
-    }
-  }, [])
-
-  useEffect(() => () => { if (timerRef.current) clearTimeout(timerRef.current) }, [])
-
-  const services = [
-    'Coding', 'Editing', 'Social media manager', 'Brand building',
-    'Content creation', 'Advertisements', 'Software and tech', 'Financing',
-    'Auditing', 'Interactive dashboard and analytics', 'Startup building',
-    'Ecommerce', 'Dropshipping',
-  ]
+/**
+ * One service chip: a real `button` inside the `SelectionGroup`, so pointer,
+ * Enter, and Space activation come from the platform and the selected state is
+ * exposed through `aria-pressed` (Requirements 8.2, 10.9). Selected differs
+ * from unselected by an outline change and an underline, not by color alone
+ * (Requirement 9.2).
+ */
+function ServiceChip({ service }) {
+  const { selected, select } = useSelectionMember({ id: service, value: service })
 
   return (
-    <div className="space-y-12">
-      {/* Hero */}
-      <section className="relative overflow-hidden rounded-[2rem] border border-slate-200 bg-white px-6 py-10 shadow-sm sm:px-10 sm:py-16">
-        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(148,163,184,0.18)_1px,transparent_1px),linear-gradient(90deg,rgba(148,163,184,0.18)_1px,transparent_1px)] bg-[length:80px_80px]" />
-        <div className="pointer-events-none absolute left-[10%] top-[16%] h-28 w-28 rounded-3xl bg-orange-100/80 blur-3xl" />
-        <div className="pointer-events-none absolute right-[10%] top-[24%] h-24 w-24 rounded-3xl bg-sky-100/80 blur-3xl" />
-        <div className="relative mx-auto max-w-5xl text-center">
-          <h1 className="text-4xl font-semibold tracking-tight text-slate-900 sm:text-5xl md:text-6xl">
+    <Badge
+      as="button"
+      type="button"
+      tone={selected ? 'solid' : 'outline'}
+      accent="tech"
+      aria-pressed={selected}
+      onClick={select}
+      data-slot="home-old-service-chip"
+      data-selected={selected ? 'true' : undefined}
+      className={cn(
+        'min-h-[var(--size-touch)] cursor-pointer md:min-h-8',
+        'aria-pressed:underline aria-pressed:underline-offset-4 aria-pressed:decoration-2',
+        'focus-visible:outline-[var(--border-2)] focus-visible:outline-offset-2 focus-visible:outline-focus',
+        selected && 'ring-2 ring-tech-cyan',
+      )}
+    >
+      {service}
+    </Badge>
+  )
+}
+
+export default function HomePage() {
+  // Single enquiry activation surface. Outside a provider the hook still
+  // reaches the mounted modal through its window bridge, so no CTA is inert.
+  const { openEnquiry } = useEnquiry()
+  const motionSafe = useMotionSafe()
+
+  const [selected, setSelected] = useState(null)
+  const [ringOn, setRingOn] = useState(false)
+  const ringTimerRef = useRef(null)
+  const hashHandledRef = useRef(false)
+
+  // The legacy header's "Our Work" item is a hash destination, so an inbound
+  // request carrying it lands on the anchor below. Under a reduced-motion
+  // preference the same anchor is reached without the animated scroll.
+  useEffect(() => {
+    if (hashHandledRef.current) return undefined
+    if (typeof window === 'undefined' || window.location.hash !== '#work') return undefined
+
+    hashHandledRef.current = true
+    const timer = window.setTimeout(() => {
+      document.getElementById('work')?.scrollIntoView({
+        behavior: motionSafe ? 'smooth' : 'auto',
+        block: 'start',
+      })
+    }, 0)
+
+    return () => window.clearTimeout(timer)
+  }, [motionSafe])
+
+  useEffect(
+    () => () => {
+      if (ringTimerRef.current) clearTimeout(ringTimerRef.current)
+    },
+    [],
+  )
+
+  // A preference change mid-session drops the decorative ring immediately.
+  useEffect(() => {
+    if (motionSafe) return
+    if (ringTimerRef.current) clearTimeout(ringTimerRef.current)
+    setRingOn(false)
+  }, [motionSafe])
+
+  /**
+   * Record the picked service and, when decorative motion is allowed, ring the
+   * Enquire Now action for the same window the pre-redesign pulse used. The
+   * selected-service feedback itself is state, not decoration, so it is set
+   * regardless of the preference.
+   */
+  function handleSelectService(service) {
+    setSelected(service)
+
+    if (ringTimerRef.current) clearTimeout(ringTimerRef.current)
+    if (!motionSafe) {
+      setRingOn(false)
+      return
+    }
+
+    setRingOn(true)
+    ringTimerRef.current = setTimeout(() => setRingOn(false), PULSE_MS)
+  }
+
+  const ringActive = ringOn && motionSafe
+
+  return (
+    <>
+      <Section
+        tone="surface"
+        pad="lg"
+        backdrop={<TechBackdrop variant="grid" intensity="subtle" />}
+        data-slot="home-old-hero"
+      >
+        <Container
+          width="narrow"
+          className="flex flex-col items-center gap-[var(--space-5)] text-center"
+        >
+          <h1 className="text-[length:var(--text-display)] font-extrabold tracking-[-0.02em] text-content">
             Building High-Performance Websites and Software That Power Growing Businesses.
           </h1>
-          <p className="mx-auto mt-6 max-w-3xl text-base leading-7 text-slate-600 sm:text-lg">
-            We design and develop custom websites, web applications, and software platforms that help businesses acquire users, streamline operations, and scale with confidence.
+          <p className="max-w-[var(--measure)] text-[length:var(--text-body)] leading-relaxed text-content-muted">
+            We design and develop custom websites, web applications, and software platforms that
+            help businesses acquire users, streamline operations, and scale with confidence.
           </p>
-          <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <button type="button" onClick={() => window.dispatchEvent(new CustomEvent('open-enquire'))} className="inline-flex items-center justify-center rounded-full bg-orange-500 px-7 py-3 text-sm font-semibold text-white shadow-lg shadow-orange-500/20 transition hover:bg-orange-600">
+
+          <div className="flex flex-col items-center gap-[var(--space-3)] sm:flex-row">
+            <Button
+              type="button"
+              variant="brand"
+              size="lg"
+              onClick={openEnquiry}
+              data-slot="home-old-quote-cta"
+            >
               Request A Quote
-            </button>
-            <Link to="/partner" className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-7 py-3 text-sm font-semibold text-slate-900 shadow-sm transition hover:bg-slate-50">
-              Explore Solutions
-            </Link>
+            </Button>
+            <Button asChild variant="outline" size="lg" data-slot="home-old-solutions-cta">
+              <Link to="/partner">Explore Solutions</Link>
+            </Button>
           </div>
-          <div className="mt-12 flex flex-col items-center gap-6 sm:flex-row sm:justify-center">
-            <div className="flex flex-col items-center gap-2">
-              <div className="inline-flex items-center gap-3 rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3">
-                <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-900 text-sm font-semibold text-white">D</span>
-                <span className="text-sm font-semibold tracking-[0.16em] text-slate-700">DESIGNRUSH</span>
-              </div>
-              <div className="text-xs text-slate-500">4.8 Star Ratings</div>
-            </div>
-            <div className="flex flex-col items-center gap-2">
-              <div className="inline-flex items-center gap-3 rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3">
-                <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-900 text-sm font-semibold text-white">C</span>
-                <span className="text-sm font-semibold tracking-[0.16em] text-slate-700">Clutch</span>
-              </div>
-              <div className="text-xs text-slate-500">4.9/5.0 ★★★★★</div>
-            </div>
-          </div>
-        </div>
-      </section>
 
-      <button type="button" onClick={() => window.dispatchEvent(new CustomEvent('open-enquire'))} className="fixed right-5 bottom-5 z-50 hidden rounded-full bg-orange-500 px-5 py-3 text-sm font-semibold text-white shadow-xl shadow-orange-500/20 transition hover:bg-orange-600 md:inline-flex">
+          <div className="flex flex-col items-center gap-[var(--space-5)] sm:flex-row sm:justify-center">
+            {ratings.map((rating) => (
+              <div
+                key={rating.name}
+                data-slot="home-old-rating"
+                className="flex flex-col items-center gap-[var(--space-2)]"
+              >
+                <div className="inline-flex items-center gap-[var(--space-3)] rounded-md border border-line bg-surface-high px-[var(--space-4)] py-[var(--space-3)]">
+                  <span className="inline-flex h-[var(--space-6)] w-[var(--space-6)] items-center justify-center rounded-sm bg-tech-blue text-[length:var(--text-label)] font-semibold text-canvas">
+                    {rating.initial}
+                  </span>
+                  <span className="text-[length:var(--text-label)] font-semibold tracking-[0.16em] text-content">
+                    {rating.name}
+                  </span>
+                </div>
+                <p className="text-[length:var(--text-meta)] text-content-muted">{rating.score}</p>
+              </div>
+            ))}
+          </div>
+        </Container>
+      </Section>
+
+      {/* Kept from the baseline: the page's own fixed conversion action, shown
+          from the md breakpoint up. */}
+      <Button
+        type="button"
+        variant="brand"
+        onClick={openEnquiry}
+        data-slot="home-old-call-cta"
+        className="fixed right-[var(--space-5)] bottom-[var(--space-5)] z-50 hidden shadow-float md:inline-flex"
+      >
         Book A Call
-      </button>
+      </Button>
 
-      {/* Services */}
-      <section className="rounded-[2rem] border border-slate-200 bg-white p-8 shadow-sm md:p-12">
-        <h2 className="text-2xl font-semibold tracking-tight text-slate-900">Any Work or Workforce Are you looking To get Your Work Done?</h2>
-        <p className="mt-3 max-w-4xl text-sm leading-7 text-slate-600">We Help You Get it Done in Minimum days With Experienced Workforce of us.</p>
-        <p className="mt-5 text-sm font-semibold text-slate-900">What kind of service you are looking for?</p>
-        <div className="mt-3 flex flex-wrap gap-2">
-          {services.map((s) => (
-            <button key={s} type="button" onClick={() => { setSelected(s); setPulse(true); timerRef.current && clearTimeout(timerRef.current); timerRef.current = setTimeout(() => setPulse(false), 1400) }}
-              className={selected === s ? 'inline-flex items-center rounded-full border border-slate-300 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-900' : 'inline-flex items-center rounded-full border border-slate-200 bg-white/70 px-3 py-1 text-xs font-semibold text-slate-700'}>
-              {s}
-            </button>
-          ))}
-        </div>
-        <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
-          <Link to="/enquire" className={pulse ? 'inline-flex items-center justify-center gap-2 rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold text-white shadow-sm ring-2 ring-slate-900 ring-offset-2 ring-offset-white transition' : 'inline-flex items-center justify-center gap-2 rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800'}>
-            Enquire Now <ArrowRight className="h-4 w-4" />
-          </Link>
-          {selected && <div className="text-sm text-slate-600">Selected: <span className="font-semibold text-slate-900">{selected}</span></div>}
-        </div>
-      </section>
+      <Section tone="canvas" pad="lg" data-slot="home-old-services">
+        <Container className="flex flex-col gap-[var(--space-5)]">
+          <SectionHeading
+            level={2}
+            title="Any Work or Workforce Are you looking To get Your Work Done?"
+            lede="We Help You Get it Done in Minimum days With Experienced Workforce of us."
+          />
 
-      {/* Why Us */}
-      <section className="rounded-[2rem] border border-slate-200 bg-white p-8 shadow-sm md:p-12">
-        <h2 className="text-2xl font-semibold tracking-tight text-slate-900">Why Us</h2>
-        <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">Simple, transparent terms — focused on outcomes.</p>
-        <div className="mt-6 grid gap-3 md:grid-cols-2">
-          {[
-            { title: 'On-time delivery', desc: 'Committed timelines and clear milestones.' },
-            { title: 'No full advanced payment', desc: 'Work starts without demanding full payment upfront.' },
-            { title: 'Industry expertise free of cost', desc: 'Consulting, planning, and guidance included.' },
-            { title: 'Industry cheapest price', desc: 'If anyone matches or goes below it (verified), we will do the entire work for free.', danger: true },
-          ].map((item) => (
-            <div key={item.title} className="flex gap-3 rounded-3xl border border-slate-200 bg-white px-5 py-4 shadow-sm">
-              <span className="mt-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-slate-900">
-                <Shield className="h-5 w-5 text-white" />
-              </span>
-              <div>
-                <div className="text-sm font-semibold text-slate-900">{item.title}</div>
-                {item.danger ? (
-                  <div className="mt-2 text-sm leading-6 text-slate-700"><span className="rounded-md bg-red-100 px-2 py-1 font-semibold text-red-700">{item.desc}</span></div>
-                ) : (
-                  <div className="mt-1 text-sm leading-6 text-slate-600">{item.desc}</div>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+          <p
+            id="home-old-service-prompt"
+            className="text-[length:var(--text-label)] font-semibold text-content"
+          >
+            What kind of service you are looking for?
+          </p>
 
-      {/* Work */}
-      <section id="work" className="space-y-10">
-        <header className="space-y-2">
-          <h2 className="text-2xl font-semibold tracking-tight text-slate-900">Our Work</h2>
-          <p className="max-w-3xl text-sm leading-6 text-slate-600">Scroll through premium case studies — enterprise systems, SaaS products, startup ventures, global brands, and transformation stories.</p>
-        </header>
+          <SelectionGroup
+            name="home-old-services"
+            value={selected}
+            onChange={handleSelectService}
+            aria-labelledby="home-old-service-prompt"
+            data-slot="home-old-service-selector"
+            className="flex flex-wrap gap-[var(--space-2)]"
+          >
+            {services.map((service) => (
+              <ServiceChip key={service} service={service} />
+            ))}
+          </SelectionGroup>
 
-        {projects.map((project, idx) => {
-          const swap = idx % 2 === 1
-          return (
-            <CardSection key={project.id}>
-              <div className="grid gap-8 md:grid-cols-2 md:items-start">
-                <div className={`space-y-5 ${swap ? 'md:order-2' : 'md:order-1'}`}>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <Badge>{project.badge}</Badge>
-                    <Badge>EXFLOW</Badge>
-                  </div>
-                  <div>
-                    <h3 className="text-2xl font-semibold tracking-tight text-slate-900">{project.title}</h3>
-                    <p className="mt-1 text-sm text-slate-600">{project.subtitle}</p>
-                  </div>
-                  <div className="flex flex-col gap-3 sm:flex-row">
-                    <Link to="/enquire" className="inline-flex items-center justify-center gap-2 rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800">
-                      <Search className="h-4 w-4" /> Enquire For Work <ArrowRight className="h-4 w-4" />
-                    </Link>
-                    <Link to="/partner" className="inline-flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-slate-900 shadow-sm transition hover:bg-slate-50">
-                      <FileText className="h-4 w-4 text-slate-700" /> Partner With Us
-                    </Link>
-                  </div>
-                </div>
-                <div className={`space-y-4 ${swap ? 'md:order-1' : 'md:order-2'}`}>
-                  <div className="rounded-3xl border border-slate-200 bg-white p-7 shadow-sm">
-                    <h4 className="text-base font-semibold text-slate-900">What are the problems?</h4>
-                    <div className="mt-4">
-                      {project.problem?.length ? <FeatureList items={project.problem} /> : <p className="text-sm leading-7 text-slate-600">{project.overview}</p>}
+          <div className="flex flex-col gap-[var(--space-3)] sm:flex-row sm:items-center">
+            <Button
+              asChild
+              variant="brand"
+              size="lg"
+              data-slot="home-old-enquire-cta"
+              data-pulse={ringActive ? 'true' : undefined}
+              className={cn(
+                ringActive && 'ring-2 ring-tech-cyan ring-offset-2 ring-offset-canvas',
+              )}
+            >
+              <Link to="/enquire">
+                Enquire Now
+                <ArrowRight aria-hidden="true" />
+              </Link>
+            </Button>
+
+            {selected ? (
+              <p
+                data-slot="home-old-selected-service"
+                className="text-[length:var(--text-label)] text-content-muted"
+              >
+                Selected: <span className="font-semibold text-content">{selected}</span>
+              </p>
+            ) : null}
+          </div>
+        </Container>
+      </Section>
+
+      <Section tone="surface" pad="lg" data-slot="home-old-why-us">
+        <Container className="flex flex-col gap-[var(--space-6)]">
+          <SectionHeading
+            level={2}
+            title="Why Us"
+            lede="Simple, transparent terms — focused on outcomes."
+          />
+
+          <ul className="grid list-none grid-cols-1 gap-[var(--space-4)] p-0 md:grid-cols-2">
+            {whyUs.map((item, index) => (
+              <Reveal
+                key={item.title}
+                as="li"
+                delay={index * CARD_STAGGER_MS}
+                className="h-full"
+              >
+                <Card tone="raised" className="h-full" data-slot="home-old-why-us-item">
+                  <CardHeader className="flex-row items-start gap-[var(--space-4)]">
+                    <span aria-hidden="true" className={ICON_TILE}>
+                      <Shield className="h-[var(--size-icon-sm)] w-[var(--size-icon-sm)]" />
+                    </span>
+                    <div className="flex flex-col gap-[var(--space-2)]">
+                      <CardTitle>{item.title}</CardTitle>
+                      <CardDescription>
+                        {item.emphasis ? (
+                          <span className="rounded-xs bg-danger/10 px-[var(--space-2)] py-[var(--space-1)] font-semibold text-danger">
+                            {item.desc}
+                          </span>
+                        ) : (
+                          item.desc
+                        )}
+                      </CardDescription>
                     </div>
-                  </div>
-                  <div className="rounded-3xl border border-slate-200 bg-white p-7 shadow-sm">
-                    <h4 className="text-base font-semibold text-slate-900">What solution we built</h4>
-                    <div className="mt-4"><FeatureList items={project.features} /></div>
-                    {project.impact?.length && (
-                      <div className="mt-6">
-                        <h5 className="text-sm font-semibold text-slate-900">Impact</h5>
-                        <div className="mt-3"><FeatureList items={project.impact} /></div>
+                  </CardHeader>
+                </Card>
+              </Reveal>
+            ))}
+          </ul>
+        </Container>
+      </Section>
+
+      <Section id="work" tone="canvas" pad="lg" data-slot="home-old-work">
+        <Container className="flex flex-col gap-[var(--space-7)]">
+          <SectionHeading
+            level={2}
+            title="Our Work"
+            lede="Scroll through premium case studies — enterprise systems, SaaS products, startup ventures, global brands, and transformation stories."
+          />
+
+          <div className="flex flex-col gap-[var(--space-6)]">
+            {projects.map((project, index) => {
+              const swap = index % 2 === 1
+              return (
+                <Reveal key={project.id} delay={CARD_STAGGER_MS}>
+                  <Card
+                    tone="surface"
+                    data-slot="home-old-case-study"
+                    className="p-[var(--space-5)] md:p-[var(--space-7)]"
+                  >
+                    <div className="grid gap-[var(--space-6)] md:grid-cols-2 md:items-start">
+                      <div
+                        className={cn(
+                          'flex flex-col gap-[var(--space-4)]',
+                          swap ? 'md:order-2' : 'md:order-1',
+                        )}
+                      >
+                        <div className="flex flex-wrap items-center gap-[var(--space-2)]">
+                          <Badge accent="tech" tone="soft">
+                            {project.badge}
+                          </Badge>
+                          <Badge accent="tech" tone="outline">
+                            EXFLOW
+                          </Badge>
+                        </div>
+
+                        <div className="flex flex-col gap-[var(--space-2)]">
+                          <h3 className="text-[length:var(--text-heading)] font-bold tracking-[-0.01em] text-content">
+                            {project.title}
+                          </h3>
+                          <p className={PANEL_BODY}>{project.subtitle}</p>
+                        </div>
+
+                        <div className="flex flex-col gap-[var(--space-3)] sm:flex-row">
+                          <Button
+                            asChild
+                            variant="tech"
+                            data-slot="home-old-case-study-enquire"
+                          >
+                            <Link to="/enquire">
+                              <Search aria-hidden="true" />
+                              Enquire For Work
+                              <ArrowRight aria-hidden="true" />
+                            </Link>
+                          </Button>
+                          <Button
+                            asChild
+                            variant="outline"
+                            data-slot="home-old-case-study-partner"
+                          >
+                            <Link to="/partner">
+                              <FileText aria-hidden="true" />
+                              Partner With Us
+                            </Link>
+                          </Button>
+                        </div>
                       </div>
-                    )}
-                    {project.recognition && (
-                      <div className="mt-6">
-                        <h5 className="text-sm font-semibold text-slate-900">Industry Recognition</h5>
-                        <p className="mt-2 text-sm leading-7 text-slate-600">{project.recognition}</p>
+
+                      <div
+                        className={cn(
+                          'flex flex-col gap-[var(--space-4)]',
+                          swap ? 'md:order-1' : 'md:order-2',
+                        )}
+                      >
+                        <Card tone="raised" data-slot="home-old-case-study-problems">
+                          <CardHeader>
+                            <h4 className={PANEL_TITLE}>What are the problems?</h4>
+                          </CardHeader>
+                          <CardContent>
+                            {project.problem?.length ? (
+                              <FeatureList items={project.problem} />
+                            ) : (
+                              <p className={PANEL_BODY}>{project.overview}</p>
+                            )}
+                          </CardContent>
+                        </Card>
+
+                        <Card tone="raised" data-slot="home-old-case-study-solution">
+                          <CardHeader>
+                            <h4 className={PANEL_TITLE}>What solution we built</h4>
+                          </CardHeader>
+                          <CardContent className="flex flex-col gap-[var(--space-5)]">
+                            <FeatureList items={project.features} />
+
+                            {project.impact?.length ? (
+                              <div className="flex flex-col gap-[var(--space-3)]">
+                                <h5 className={NOTE_TITLE}>Impact</h5>
+                                <FeatureList items={project.impact} />
+                              </div>
+                            ) : null}
+
+                            {project.recognition ? (
+                              <div className="flex flex-col gap-[var(--space-2)]">
+                                <h5 className={NOTE_TITLE}>Industry Recognition</h5>
+                                <p className={PANEL_BODY}>{project.recognition}</p>
+                              </div>
+                            ) : null}
+                          </CardContent>
+                        </Card>
                       </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </CardSection>
-          )
-        })}
-      </section>
-    </div>
+                    </div>
+                  </Card>
+                </Reveal>
+              )
+            })}
+          </div>
+        </Container>
+      </Section>
+    </>
   )
 }

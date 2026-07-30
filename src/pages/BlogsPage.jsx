@@ -1,13 +1,61 @@
-import React from 'react'
-import { motion } from 'framer-motion'
 import {
-  BookOpen, Sparkles, Code2, Workflow, Truck, Utensils, Rocket, TrendingUp, Globe, ArrowRight,
+  ArrowRight,
+  BookOpen,
+  Code2,
+  Globe,
+  Rocket,
+  Sparkles,
+  TrendingUp,
+  Truck,
+  Utensils,
+  Workflow,
 } from 'lucide-react'
-import PublicHeader from '../components/PublicHeader'
-import PublicFooter from '../components/PublicFooter'
 
-const openEnquire = () =>
-  window.dispatchEvent(new CustomEvent('open-enquire'))
+import Badge from '@/components/system/Badge'
+import Container from '@/components/system/Container'
+import Eyebrow from '@/components/system/Eyebrow'
+import Section from '@/components/system/Section'
+import SectionHeading from '@/components/system/SectionHeading'
+import TechBackdrop from '@/components/system/TechBackdrop'
+import { useEnquiry } from '@/components/enquiry/EnquiryProvider'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
+
+/**
+ * `/blogs` - one of the uniform Public_Route pages.
+ *
+ * The route shell (`PublicLayout`, applied in `App.jsx`) owns the header, the
+ * footer, and the floating conversion action, so this page renders page content
+ * only; the inline chrome it used to carry is gone (Requirement 11.3).
+ *
+ * Content is preserved verbatim from the approved baseline (Requirement 5.4):
+ * all eight topic previews from the unchanged `topics` array, each with its
+ * category label and reading-time label, the coming-soon status on every card
+ * plus the "Coming Soon" band kicker and the "Articles publishing soon."
+ * note, and the closing contact action with its baseline label ("Get In Touch")
+ * and modal behavior. The coming-soon status is now always rendered rather than
+ * revealed on hover, so it is available without pointer interaction.
+ *
+ * Shell order matches every other public route (Requirement 5.6): hero band with
+ * the route's single `h1`, then a content band of a card grid, then the closing
+ * call-to-action band. Topic titles sit one level below the band heading, so the
+ * heading outline has no gap and exactly one top-level heading (Requirement
+ * 10.5).
+ *
+ * Presentation is token-only (Requirement 1.1): no literal color values. Category
+ * and reading-time chips are token `Badge`s on the cyan tech accent; the orange
+ * Brand_Accent appears only on the conversion button (Requirement 1.3).
+ *
+ * Requirements: 5.4, 5.6, 1.1, 11.3
+ */
+
+/** Shared icon-tile treatment for every topic card. */
+const ICON_TILE =
+  'inline-flex h-[var(--space-7)] w-[var(--space-7)] shrink-0 items-center justify-center rounded-sm bg-tech-cyan/10 text-tech-cyan'
+
+/** Card heading role: one step below a band heading, matching the card title. */
+const CARD_TITLE =
+  'text-[length:var(--text-body)] font-semibold leading-snug tracking-[-0.01em] text-content'
 
 const topics = [
   { icon: Sparkles, title: 'How AI is Changing Business Operations', tag: 'AI & Automation', read: '6 min read' },
@@ -21,105 +69,109 @@ const topics = [
 ]
 
 export default function BlogsPage() {
+  // Single enquiry activation surface (Requirement 6.10).
+  const { openEnquiry } = useEnquiry()
+
   return (
-    <div className="bge-site flex flex-col min-h-screen bg-white">
-      <PublicHeader />
+    <>
+      <Section
+        tone="surface"
+        pad="lg"
+        backdrop={<TechBackdrop variant="mesh" intensity="subtle" />}
+        data-slot="blogs-hero"
+      >
+        <Container
+          width="narrow"
+          className="flex flex-col items-center gap-[var(--space-5)] text-center"
+        >
+          <Eyebrow icon={<BookOpen className="h-[var(--size-icon-xs)] w-[var(--size-icon-xs)]" />}>
+            Blog &amp; Insights
+          </Eyebrow>
+          <h1 className="text-[length:var(--text-display)] font-extrabold tracking-[-0.02em] text-content">
+            Ideas, Trends &amp; <span className="text-tech-cyan">Practical Insights.</span>
+          </h1>
+          <p className="max-w-[var(--measure)] text-[length:var(--text-body)] leading-relaxed text-content-muted">
+            Our blog covers software development, AI, automation, business growth, fleet technology,
+            restaurant systems, and digital transformation.
+          </p>
+        </Container>
+      </Section>
 
-      <main className="flex-grow pt-24">
-        {/* Hero */}
-        <section className="bg-warm-cream bg-grid-pattern py-20 md:py-28 relative overflow-hidden">
-          <div className="container mx-auto px-4 md:px-6 relative z-10 text-center max-w-4xl">
-            <motion.p
-              initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-              className="inline-flex items-center gap-2 rounded-full border border-orange-200 bg-white px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-orange-600 mb-6"
-            >
-              <BookOpen className="h-3.5 w-3.5" /> Blog & Insights
-            </motion.p>
-            <motion.h1
-              initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-              className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-black tracking-tight leading-[1.1] mb-6"
-            >
-              Ideas, Trends & <span className="text-orange-500">Practical Insights.</span>
-            </motion.h1>
-            <motion.p
-              initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-              className="text-lg md:text-xl text-gray-600 leading-relaxed max-w-3xl mx-auto"
-            >
-              Our blog covers software development, AI, automation, business growth, fleet technology, restaurant systems, and digital transformation.
-            </motion.p>
-          </div>
-        </section>
-
-        {/* Topics grid */}
-        <section className="bg-white py-20 md:py-24">
-          <div className="container mx-auto px-4 md:px-6 max-w-7xl">
-            <div className="flex items-end justify-between mb-12 flex-wrap gap-4">
-              <div>
-                <p className="text-sm font-bold uppercase tracking-widest text-orange-500 mb-2">Coming Soon</p>
-                <h2 className="text-2xl md:text-3xl font-extrabold text-black">
-                  Topics We're Writing About
-                </h2>
-              </div>
-              <p className="text-sm text-gray-500 italic">Articles publishing soon. Stay tuned.</p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-              {topics.map((t, i) => {
-                const Icon = t.icon
-                return (
-                  <motion.article
-                    key={t.title}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: i * 0.04 }}
-                    className="group cursor-pointer bg-gray-50 hover:bg-white border border-gray-100 hover:border-orange-200 hover:shadow-xl rounded-2xl p-6 transition-all duration-300"
-                  >
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-orange-500/10 text-orange-500 group-hover:bg-orange-500 group-hover:text-white transition-colors">
-                        <Icon className="h-5 w-5" />
-                      </div>
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 bg-white border border-gray-200 rounded-full px-2.5 py-1">
-                        {t.tag}
-                      </span>
-                    </div>
-                    <h3 className="text-base font-bold text-black leading-snug mb-3 group-hover:text-orange-600 transition-colors">
-                      {t.title}
-                    </h3>
-                    <div className="flex items-center justify-between text-xs text-gray-500">
-                      <span>{t.read}</span>
-                      <span className="font-semibold text-orange-500 opacity-0 group-hover:opacity-100 transition-opacity">
-                        Coming soon →
-                      </span>
-                    </div>
-                  </motion.article>
-                )
-              })}
-            </div>
-          </div>
-        </section>
-
-        {/* Newsletter CTA */}
-        <section className="bg-gray-50 py-20">
-          <div className="container mx-auto px-4 md:px-6 max-w-3xl text-center">
-            <h2 className="text-3xl md:text-4xl font-extrabold text-black mb-4">
-              Want these in your inbox?
-            </h2>
-            <p className="text-gray-600 text-lg mb-7">
-              We'll let you know when we publish. No spam. Just useful insights.
+      <Section tone="canvas" pad="lg" data-slot="blogs-topics">
+        <Container className="flex flex-col gap-[var(--space-7)]">
+          <div className="flex flex-col gap-[var(--space-4)] md:flex-row md:items-end md:justify-between">
+            <SectionHeading
+              level={2}
+              eyebrow="Coming Soon"
+              title="Topics We're Writing About"
+            />
+            <p className="text-[length:var(--text-label)] italic text-content-muted">
+              Articles publishing soon. Stay tuned.
             </p>
-            <button
-              type="button"
-              onClick={openEnquire}
-              className="inline-flex items-center gap-2 rounded-full bg-orange-500 hover:bg-orange-600 text-white px-8 py-3.5 text-base font-bold transition-colors shadow-lg shadow-orange-500/30"
-            >
-              Get In Touch <ArrowRight className="h-5 w-5" />
-            </button>
           </div>
-        </section>
-      </main>
 
-      <PublicFooter />
-    </div>
+          <div className="grid grid-cols-1 gap-[var(--space-5)] md:grid-cols-2 lg:grid-cols-4">
+            {topics.map((topic) => {
+              const Icon = topic.icon
+              return (
+                <Card key={topic.title} tone="raised" interactive data-slot="blogs-topic">
+                  <CardHeader>
+                    <div className="flex items-center justify-between gap-[var(--space-3)]">
+                      <span className={ICON_TILE}>
+                        <Icon
+                          aria-hidden="true"
+                          className="h-[var(--size-icon-md)] w-[var(--size-icon-md)]"
+                        />
+                      </span>
+                      <Badge accent="tech" tone="soft" data-slot="blogs-topic-category">
+                        {topic.tag}
+                      </Badge>
+                    </div>
+                    <h3 className={CARD_TITLE}>{topic.title}</h3>
+                  </CardHeader>
+                  <CardContent className="flex flex-wrap items-center gap-[var(--space-2)]">
+                    <Badge accent="tech" tone="outline" data-slot="blogs-topic-read">
+                      {topic.read}
+                    </Badge>
+                    <Badge tone="muted" data-slot="blogs-topic-status">
+                      Coming soon →
+                    </Badge>
+                  </CardContent>
+                </Card>
+              )
+            })}
+          </div>
+        </Container>
+      </Section>
+
+      <Section
+        tone="surface"
+        pad="lg"
+        backdrop={<TechBackdrop variant="grid" intensity="subtle" />}
+        data-slot="blogs-cta"
+      >
+        <Container width="prose">
+          <SectionHeading
+            level={2}
+            align="center"
+            title="Want these in your inbox?"
+            lede="We'll let you know when we publish. No spam. Just useful insights."
+            className="items-center"
+            action={
+              <Button
+                type="button"
+                variant="brand"
+                size="lg"
+                onClick={openEnquiry}
+                data-slot="blogs-contact-cta"
+              >
+                Get In Touch
+                <ArrowRight aria-hidden="true" />
+              </Button>
+            }
+          />
+        </Container>
+      </Section>
+    </>
   )
 }

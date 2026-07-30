@@ -1,0 +1,28 @@
+{
+  "_comment": "Pre-redesign submission baseline. `enquiry` captures the insert performed today by src/components/EnquireModal.jsx and src/pages/EnquirePage.jsx (identical table and key order); `partnership` captures the insert performed by src/pages/PartnerPage.jsx. Field order is the literal key order in those inserts. Requirements 11.4, 11.5.",
+  "enquiry": {
+    "table": "enquiries",
+    "sources": ["src/components/EnquireModal.jsx", "src/pages/EnquirePage.jsx"],
+    "fields": [
+      "name",
+      "company",
+      "phone",
+      "email",
+      "project_details",
+      "budget",
+      "timeline"
+    ]
+  },
+  "partnership": {
+    "table": "partners",
+    "sources": ["src/pages/PartnerPage.jsx"],
+    "fields": [
+      "name",
+      "company",
+      "phone",
+      "email",
+      "investment_interest",
+      "message"
+    ]
+  }
+}

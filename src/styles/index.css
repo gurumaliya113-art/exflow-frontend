@@ -1,6 +1,30 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-@import "tailwindcss";
+/**
+ * EXFLOW base layer.
+ *
+ * Load order matters: web fonts, then the token layer (`theme.css`, which
+ * pulls in Tailwind), then the shadcn compatibility bridge, then base styles.
+ *
+ * There is exactly one palette - the dark "techy" one. The previous light
+ * `:root` / `.dark` pair and the `.bge-site` orange scope are retired; every
+ * surface now reads from the `@theme` tokens in `theme.css`.
+ *
+ * Requirements: 1.1, 1.2, 9.3, 9.4, 9.5, 10.4
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500;1,600;1,700&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+@import "./theme.css";
+
+/* ---------------------------------------------------------------------------
+   shadcn compatibility bridge.
+
+   `components/ui/*` and the `landing/*` components consume the shadcn colour
+   contract - Tailwind utilities such as `bg-background` / `text-primary` plus
+   raw `hsl(var(--primary))` strings inside chart props. The HSL-triplet shape
+   is kept so those inline strings keep resolving, but every value is now the
+   HSL form of a design token, so the legacy components render on the new dark
+   palette while they are migrated.
+   --------------------------------------------------------------------------- */
 
 @theme inline {
   --color-background: hsl(var(--background));
@@ -26,135 +50,155 @@
 }
 
 :root {
-  --background: 220 20% 97%;
-  --foreground: 230 30% 10%;
-  --border: 220 15% 90%;
-  --card: 0 0% 100%;
-  --card-foreground: 230 30% 10%;
-  --card-border: 220 15% 90%;
-  --sidebar: 220 20% 97%;
-  --sidebar-foreground: 230 30% 10%;
-  --sidebar-border: 220 15% 90%;
-  --sidebar-primary: 221 83% 53%;
-  --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 220 15% 90%;
-  --sidebar-accent-foreground: 230 30% 10%;
-  --sidebar-ring: 221 83% 53%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 230 30% 10%;
-  --popover-border: 220 15% 90%;
-  --primary: 221 83% 53%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 220 15% 90%;
-  --secondary-foreground: 230 30% 10%;
-  --muted: 220 15% 90%;
-  --muted-foreground: 220 10% 45%;
-  --accent: 220 15% 90%;
-  --accent-foreground: 230 30% 10%;
-  --destructive: 0 84% 60%;
-  --destructive-foreground: 0 0% 100%;
-  --input: 220 15% 90%;
-  --ring: 221 83% 53%;
-  --chart-1: 221 83% 53%;
-  --chart-2: 200 90% 40%;
-  --chart-3: 160 80% 45%;
-  --chart-4: 280 70% 50%;
-  --chart-5: 320 60% 55%;
-  --app-font-sans: 'Plus Jakarta Sans', sans-serif;
-  --app-font-serif: 'Playfair Display', serif;
-  --app-font-mono: 'Space Mono', monospace;
-  --radius: .5rem;
+  color-scheme: dark;
+
+  /* HSL mirrors of the token palette, for the shadcn variable contract only.
+     Token -> triplet map:
+       canvas #070B14        221 48% 5%
+       surface #0E1526       222 46% 10%
+       surface-high #16203A  223 45% 16%
+       line #24314F          222 37% 23%
+       line-strong #35456B   222 34% 31%
+       content #F3F6FC       220 60% 97%
+       content-muted #A7B4CC 219 27% 73%
+       tech-blue #4F8DF7     218 91% 64%
+       tech-cyan #22D3EE     188 86% 53%
+       tech-violet #8B5CF6   258 90% 66%
+       success #34D399       158 64% 52%
+       danger #FB7185        351 95% 71%
+       focus #7DE3F4         189 84% 72% */
+  --background: 221 48% 5%;          /* --color-canvas */
+  --foreground: 220 60% 97%;         /* --color-content */
+  --border: 222 37% 23%;             /* --color-line */
+  --input: 222 37% 23%;              /* --color-line */
+  --ring: 189 84% 72%;               /* --color-focus */
+  --card: 222 46% 10%;               /* --color-surface */
+  --card-foreground: 220 60% 97%;    /* --color-content */
+  --card-border: 222 37% 23%;        /* --color-line */
+  --popover: 223 45% 16%;            /* --color-surface-high */
+  --popover-foreground: 220 60% 97%; /* --color-content */
+  --popover-border: 222 37% 23%;     /* --color-line */
+  --primary: 218 91% 64%;            /* --color-tech-blue (brand orange is CTA-only) */
+  --primary-foreground: 221 48% 5%;  /* --color-canvas */
+  --secondary: 223 45% 16%;          /* --color-surface-high */
+  --secondary-foreground: 220 60% 97%;
+  --muted: 223 45% 16%;              /* --color-surface-high */
+  --muted-foreground: 219 27% 73%;   /* --color-content-muted */
+  --accent: 223 45% 16%;             /* --color-surface-high */
+  --accent-foreground: 220 60% 97%;
+  --destructive: 351 95% 71%;        /* --color-danger */
+  --destructive-foreground: 221 48% 5%;
+  --sidebar: 222 46% 10%;
+  --sidebar-foreground: 220 60% 97%;
+  --sidebar-border: 222 37% 23%;
+  --sidebar-primary: 218 91% 64%;
+  --sidebar-primary-foreground: 221 48% 5%;
+  --sidebar-accent: 223 45% 16%;
+  --sidebar-accent-foreground: 220 60% 97%;
+  --sidebar-ring: 189 84% 72%;
+  --chart-1: 218 91% 64%;            /* tech-blue */
+  --chart-2: 188 86% 53%;            /* tech-cyan */
+  --chart-3: 158 64% 52%;            /* success */
+  --chart-4: 258 90% 66%;            /* tech-violet */
+  --chart-5: 351 95% 71%;            /* danger */
+
+  /* Legacy font aliases. The type system has two families only, so the old
+     serif slot now resolves to the sans stack instead of loading a third font. */
+  --app-font-sans: var(--font-sans);
+  --app-font-serif: var(--font-sans);
+  --app-font-mono: var(--font-mono);
+
+  --radius: var(--radius-sm);
 }
 
-.dark {
-  --background: 230 25% 6%;
-  --foreground: 220 15% 90%;
-  --border: 230 20% 15%;
-  --card: 230 25% 8%;
-  --card-foreground: 220 15% 90%;
-  --card-border: 230 20% 15%;
-  --sidebar: 230 25% 6%;
-  --sidebar-foreground: 220 15% 90%;
-  --sidebar-border: 230 20% 15%;
-  --sidebar-primary: 221 83% 65%;
-  --sidebar-primary-foreground: 230 30% 10%;
-  --sidebar-accent: 230 20% 15%;
-  --sidebar-accent-foreground: 220 15% 90%;
-  --sidebar-ring: 221 83% 65%;
-  --popover: 230 25% 8%;
-  --popover-foreground: 220 15% 90%;
-  --popover-border: 230 20% 15%;
-  --primary: 221 83% 65%;
-  --primary-foreground: 230 30% 10%;
-  --secondary: 230 20% 15%;
-  --secondary-foreground: 220 15% 90%;
-  --muted: 230 20% 15%;
-  --muted-foreground: 220 10% 60%;
-  --accent: 230 20% 15%;
-  --accent-foreground: 220 15% 90%;
-  --destructive: 0 84% 60%;
-  --destructive-foreground: 220 15% 90%;
-  --input: 230 20% 15%;
-  --ring: 221 83% 65%;
-  --chart-1: 221 83% 65%;
-  --chart-2: 200 90% 60%;
-  --chart-3: 160 80% 65%;
-  --chart-4: 280 70% 70%;
-  --chart-5: 320 60% 75%;
+/* ---------------------------------------------------------------------------
+   Base layer
+   --------------------------------------------------------------------------- */
+
+*,
+*::before,
+*::after {
+  border-color: var(--color-line);
 }
 
-* {
-  border-color: hsl(var(--border));
+html {
+  scrollbar-gutter: stable;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  font-family: var(--app-font-sans);
-  background-color: hsl(var(--background));
-  color: hsl(var(--foreground));
+  min-height: 100vh;
+  background-color: var(--color-canvas);
+  color: var(--color-content);
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+::selection {
+  background-color: var(--color-tech-cyan);
+  color: var(--color-canvas);
+}
+
+/* Unlayered so component-level `focus-visible:outline-none` utilities cannot
+   remove it: every keyboard-focused control keeps a 2px focus ring with a 2px
+   offset (Requirement 10.4). */
+:focus-visible {
+  outline: var(--border-2) solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+@layer base {
+  /* Transition allow-list. Interactive elements get a default transition for
+     the five allowed properties only - color, background-color, border-color,
+     box-shadow, opacity - so no token-driven treatment animates layout or
+     repeats a luminance change (Requirement 9.4). `:where()` keeps specificity
+     at zero, so any Tailwind transition utility still wins. */
+  :where(a, button, summary, input, textarea, select, [role='button'], [role='tab'], [role='option']) {
+    transition-property: color, background-color, border-color, box-shadow, opacity;
+    transition-duration: var(--duration-fast);
+    transition-timing-function: var(--ease-out);
+  }
+}
+
 .hover-elevate {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition-property: box-shadow, transform;
+  transition-duration: var(--duration-fast);
+  transition-timing-function: var(--ease-out);
 }
 
 .hover-elevate:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-raise);
 }
 
-/* =====================================================================
-   New public-facing site (exflow homepage + portfolio).
-   Scoped under .bge-site so it doesn't affect admin / dce / partner pages.
-   ===================================================================== */
-.bge-site {
-  --background: 0 0% 100%;
-  --foreground: 0 0% 6.7%;
-  --border: 214.3 31.8% 91.4%;
-  --input: 214.3 31.8% 91.4%;
-  --ring: 24.6 95% 53.1%;
-  --card: 0 0% 100%;
-  --card-foreground: 0 0% 6.7%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 0 0% 6.7%;
-  --primary: 24.6 95% 53.1%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 210 40% 96.1%;
-  --secondary-foreground: 222.2 47.4% 11.2%;
-  --muted: 210 40% 96.1%;
-  --muted-foreground: 215.4 16.3% 46.9%;
-  --accent: 210 40% 96.1%;
-  --accent-foreground: 222.2 47.4% 11.2%;
-  --destructive: 0 84.2% 60.2%;
-  --destructive-foreground: 210 40% 98%;
-  font-family: 'Inter', sans-serif;
-  background-color: hsl(var(--background));
-  color: hsl(var(--foreground));
+@media (prefers-reduced-motion: no-preference) {
+  .hover-elevate:hover {
+    transform: translateY(-2px);
+  }
 }
 
-.bge-site .bg-grid-pattern {
-  background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
-  background-size: 24px 24px;
+/* Global reduced-motion contract (Requirements 9.5, 9.6). */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .motion-decorative {
+    transform: none !important;
+  }
 }
-.bge-site .bg-warm-cream { background-color: #FEF9F0; }

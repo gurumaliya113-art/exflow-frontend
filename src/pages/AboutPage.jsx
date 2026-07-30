@@ -1,13 +1,58 @@
-import React from 'react'
-import { motion } from 'framer-motion'
 import {
-  Target, Zap, TrendingUp, BarChart3, Rocket, Users, ArrowRight, Sparkles,
+  BarChart3,
+  Rocket,
+  Sparkles,
+  Target,
+  TrendingUp,
+  Users,
+  Zap,
+  ArrowRight,
 } from 'lucide-react'
-import PublicHeader from '../components/PublicHeader'
-import PublicFooter from '../components/PublicFooter'
 
-const openEnquire = () =>
-  window.dispatchEvent(new CustomEvent('open-enquire'))
+import Container from '@/components/system/Container'
+import Eyebrow from '@/components/system/Eyebrow'
+import Section from '@/components/system/Section'
+import SectionHeading from '@/components/system/SectionHeading'
+import TechBackdrop from '@/components/system/TechBackdrop'
+import { useEnquiry } from '@/components/enquiry/EnquiryProvider'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { cn } from '@/lib/utils'
+
+/**
+ * `/about` - one of the uniform Public_Route pages.
+ *
+ * The route shell (`PublicLayout`, applied in `App.jsx`) owns the header, the
+ * footer, and the floating conversion action, so this page renders page content
+ * only; the inline chrome it used to carry is gone (Requirement 11.3).
+ *
+ * Content is preserved verbatim from the approved baseline (Requirement 5.3):
+ * the philosophy statement and its two supporting paragraphs, the four customer
+ * groups, all five principles with their descriptions, all four founders with
+ * their avatar initials and shared role, and the closing enquiry action with its
+ * baseline label ("Start a Conversation") and modal behavior. The `beliefs` and
+ * `founders` arrays below are unchanged data; only their wrappers changed.
+ *
+ * Shell order matches every other public route (Requirement 5.6): hero band with
+ * the route's single `h1`, then content bands of card grids, then the closing
+ * call-to-action band. Card titles sit one level below each band heading, so the
+ * heading outline has no gap and exactly one top-level heading (Requirement
+ * 10.5).
+ *
+ * Presentation is token-only (Requirement 1.1): no literal color values. Accent
+ * emphasis uses the cyan/blue tech roles; the orange Brand_Accent appears only
+ * on the conversion button (Requirement 1.3).
+ *
+ * Requirements: 5.3, 5.6, 1.1, 11.3
+ */
+
+/** Shared icon-tile treatment for every principle card. */
+const ICON_TILE =
+  'inline-flex h-[var(--space-7)] w-[var(--space-7)] shrink-0 items-center justify-center rounded-sm bg-tech-cyan/10 text-tech-cyan'
+
+/** Card heading role: one step below a band heading, matching the card title. */
+const CARD_TITLE =
+  'text-[length:var(--text-body)] font-semibold leading-tight tracking-[-0.01em] text-content'
 
 const beliefs = [
   { icon: Target, title: 'Build For Impact', desc: 'Every system we engineer is built to create measurable outcomes.' },
@@ -24,163 +69,188 @@ const founders = [
   { name: 'Anubhav', role: 'Co-Founder' },
 ]
 
+/** The customer groups, kept with their baseline arrow prefix. */
+const audiences = [
+  'Startups looking for speed',
+  'Local businesses going digital',
+  'Enterprises modernizing operations',
+  'Industry operators creating sustainable growth',
+]
+
 export default function AboutPage() {
+  // Single enquiry activation surface (Requirement 6.10).
+  const { openEnquiry } = useEnquiry()
+
   return (
-    <div className="bge-site flex flex-col min-h-screen bg-white">
-      <PublicHeader />
+    <>
+      <Section
+        tone="surface"
+        pad="lg"
+        backdrop={<TechBackdrop variant="mesh" intensity="subtle" />}
+        data-slot="about-hero"
+      >
+        <Container
+          width="narrow"
+          className="flex flex-col items-center gap-[var(--space-5)] text-center"
+        >
+          <Eyebrow icon={<Sparkles className="h-[var(--size-icon-xs)] w-[var(--size-icon-xs)]" />}>
+            About exflow
+          </Eyebrow>
+          <h1 className="text-[length:var(--text-display)] font-extrabold tracking-[-0.02em] text-content">
+            Engineered Digital Solutions for <span className="text-tech-cyan">Real Businesses.</span>
+          </h1>
+          <p className="max-w-[var(--measure)] text-[length:var(--text-body)] leading-relaxed text-content-muted">
+            exflow is a software development and digital solutions company focused on building
+            systems that help businesses automate operations, improve efficiency, and scale
+            sustainably.
+          </p>
+        </Container>
+      </Section>
 
-      <main className="flex-grow pt-24">
-        {/* Hero */}
-        <section className="bg-warm-cream bg-grid-pattern py-20 md:py-28 relative overflow-hidden">
-          <div className="container mx-auto px-4 md:px-6 relative z-10 text-center max-w-4xl">
-            <motion.p
-              initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-              className="inline-flex items-center gap-2 rounded-full border border-orange-200 bg-white px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-orange-600 mb-6"
-            >
-              <Sparkles className="h-3.5 w-3.5" /> About exflow
-            </motion.p>
-            <motion.h1
-              initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-              className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-black tracking-tight leading-[1.1] mb-6"
-            >
-              Engineered Digital Solutions for <span className="text-orange-500">Real Businesses.</span>
-            </motion.h1>
-            <motion.p
-              initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-              className="text-lg md:text-xl text-gray-600 leading-relaxed max-w-3xl mx-auto"
-            >
-              exflow is a software development and digital solutions company focused on building systems that help businesses automate operations, improve efficiency, and scale sustainably.
-            </motion.p>
+      <Section tone="canvas" pad="lg" data-slot="about-philosophy">
+        <Container className="grid items-start gap-[var(--space-7)] md:grid-cols-2">
+          <div className="flex flex-col gap-[var(--space-4)]">
+            <SectionHeading
+              level={2}
+              eyebrow="Our Philosophy"
+              title={
+                <>
+                  Technology should <span className="text-tech-cyan">simplify</span> business
+                  operations, not complicate them.
+                </>
+              }
+            />
+            <p className="max-w-[var(--measure)] text-[length:var(--text-body)] leading-relaxed text-content-muted">
+              The modern business environment demands speed, automation, and better decision
+              making. Companies relying on outdated workflows often face inefficiencies,
+              operational losses, and limited scalability.
+            </p>
+            <p className="max-w-[var(--measure)] text-[length:var(--text-body)] leading-relaxed text-content-muted">
+              exflow exists to solve those challenges through engineered digital solutions.
+            </p>
           </div>
-        </section>
 
-        {/* Philosophy */}
-        <section className="bg-white py-20 md:py-24">
-          <div className="container mx-auto px-4 md:px-6 max-w-5xl">
-            <div className="grid md:grid-cols-2 gap-12 items-center">
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
+          <Card tone="raised" data-slot="about-audiences">
+            <CardHeader>
+              <h3 className={cn(CARD_TITLE, 'flex items-center gap-[var(--space-2)]')}>
+                <Users
+                  aria-hidden="true"
+                  className="h-[var(--size-icon-sm)] w-[var(--size-icon-sm)] text-tech-cyan"
+                />
+                Who We Work With
+              </h3>
+            </CardHeader>
+            <CardContent>
+              <ul className="flex flex-col gap-[var(--space-3)] text-[length:var(--text-body)] text-content-muted">
+                {audiences.map((audience) => (
+                  <li key={audience} className="flex items-start gap-[var(--space-2)]">
+                    <span aria-hidden="true" className="font-bold text-tech-cyan">
+                      →
+                    </span>
+                    {audience}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+        </Container>
+      </Section>
+
+      <Section tone="surface" pad="lg" data-slot="about-beliefs">
+        <Container className="flex flex-col gap-[var(--space-7)]">
+          <SectionHeading
+            level={2}
+            align="center"
+            eyebrow="What We Believe"
+            title="Principles That Guide Every System We Build"
+            className="items-center"
+          />
+          <div className="grid grid-cols-1 gap-[var(--space-5)] sm:grid-cols-2 lg:grid-cols-5">
+            {beliefs.map((belief) => {
+              const Icon = belief.icon
+              return (
+                <Card key={belief.title} tone="raised" interactive data-slot="about-belief">
+                  <CardHeader>
+                    <span className={ICON_TILE}>
+                      <Icon
+                        aria-hidden="true"
+                        className="h-[var(--size-icon-md)] w-[var(--size-icon-md)]"
+                      />
+                    </span>
+                    <h3 className={CARD_TITLE}>{belief.title}</h3>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-[length:var(--text-label)] leading-relaxed text-content-muted">
+                      {belief.desc}
+                    </p>
+                  </CardContent>
+                </Card>
+              )
+            })}
+          </div>
+        </Container>
+      </Section>
+
+      <Section tone="canvas" pad="lg" data-slot="about-founders">
+        <Container className="flex flex-col gap-[var(--space-7)]">
+          <SectionHeading
+            level={2}
+            align="center"
+            eyebrow="Co-Founded By"
+            title="Builders Solving Real-World Problems Through Technology"
+            lede="Founded by engineers who believe great software comes from understanding businesses, not just writing code."
+            className="items-center"
+          />
+          <div className="grid grid-cols-2 gap-[var(--space-5)] md:grid-cols-4">
+            {founders.map((founder) => (
+              <Card key={founder.name} tone="surface" data-slot="about-founder">
+                <CardHeader className="items-center text-center">
+                  <span className="mx-auto inline-flex h-[var(--space-8)] w-[var(--space-8)] items-center justify-center rounded-pill bg-tech-blue/15 text-[length:var(--text-heading)] font-extrabold text-tech-cyan">
+                    {founder.name.charAt(0)}
+                  </span>
+                  <h3 className={CARD_TITLE}>{founder.name}</h3>
+                  <p className="text-[length:var(--text-label)] font-semibold text-tech-cyan">
+                    {founder.role}
+                  </p>
+                </CardHeader>
+              </Card>
+            ))}
+          </div>
+        </Container>
+      </Section>
+
+      <Section
+        tone="surface"
+        pad="lg"
+        backdrop={<TechBackdrop variant="grid" intensity="subtle" />}
+        data-slot="about-cta"
+      >
+        <Container width="prose">
+          <SectionHeading
+            level={2}
+            align="center"
+            title={
+              <>
+                Ready to build something that{' '}
+                <span className="text-tech-cyan">actually works?</span>
+              </>
+            }
+            className="items-center"
+            action={
+              <Button
+                type="button"
+                variant="brand"
+                size="lg"
+                onClick={openEnquiry}
+                data-slot="about-enquiry-cta"
               >
-                <p className="text-sm font-bold uppercase tracking-widest text-orange-500 mb-3">Our Philosophy</p>
-                <h2 className="text-3xl md:text-4xl font-extrabold text-black leading-tight mb-6">
-                  Technology should <span className="text-orange-500">simplify</span> business operations, not complicate them.
-                </h2>
-                <p className="text-gray-600 leading-relaxed mb-4">
-                  The modern business environment demands speed, automation, and better decision making. Companies relying on outdated workflows often face inefficiencies, operational losses, and limited scalability.
-                </p>
-                <p className="text-gray-600 leading-relaxed">
-                  exflow exists to solve those challenges through engineered digital solutions.
-                </p>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                className="bg-gradient-to-br from-orange-50 to-amber-50 border border-orange-100 rounded-3xl p-8"
-              >
-                <h3 className="text-xl font-bold text-black mb-5 flex items-center gap-2">
-                  <Users className="h-5 w-5 text-orange-500" />
-                  Who We Work With
-                </h3>
-                <ul className="space-y-3 text-gray-700">
-                  <li className="flex items-start gap-2"><span className="text-orange-500 font-bold">→</span> Startups looking for speed</li>
-                  <li className="flex items-start gap-2"><span className="text-orange-500 font-bold">→</span> Local businesses going digital</li>
-                  <li className="flex items-start gap-2"><span className="text-orange-500 font-bold">→</span> Enterprises modernizing operations</li>
-                  <li className="flex items-start gap-2"><span className="text-orange-500 font-bold">→</span> Industry operators creating sustainable growth</li>
-                </ul>
-              </motion.div>
-            </div>
-          </div>
-        </section>
-
-        {/* Beliefs */}
-        <section className="bg-gray-50 py-20 md:py-24">
-          <div className="container mx-auto px-4 md:px-6 max-w-7xl">
-            <div className="text-center mb-14">
-              <p className="text-sm font-bold uppercase tracking-widest text-orange-500 mb-3">What We Believe</p>
-              <h2 className="text-3xl md:text-4xl font-extrabold text-black">
-                Principles That Guide Every System We Build
-              </h2>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
-              {beliefs.map((b, i) => {
-                const Icon = b.icon
-                return (
-                  <motion.div
-                    key={b.title}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: i * 0.05 }}
-                    className="bg-white border border-gray-100 rounded-2xl p-6 hover:shadow-lg hover:border-orange-200 transition-all"
-                  >
-                    <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-orange-500/10 text-orange-500 mb-4">
-                      <Icon className="h-6 w-6" />
-                    </div>
-                    <h3 className="text-base font-bold text-black mb-2">{b.title}</h3>
-                    <p className="text-sm text-gray-600 leading-relaxed">{b.desc}</p>
-                  </motion.div>
-                )
-              })}
-            </div>
-          </div>
-        </section>
-
-        {/* Founders */}
-        <section className="bg-white py-20 md:py-24">
-          <div className="container mx-auto px-4 md:px-6 max-w-5xl">
-            <div className="text-center mb-12">
-              <p className="text-sm font-bold uppercase tracking-widest text-orange-500 mb-3">Co-Founded By</p>
-              <h2 className="text-3xl md:text-4xl font-extrabold text-black mb-3">
-                Builders Solving Real-World Problems Through Technology
-              </h2>
-              <p className="text-gray-600 max-w-2xl mx-auto">
-                Founded by engineers who believe great software comes from understanding businesses, not just writing code.
-              </p>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              {founders.map((f, i) => (
-                <motion.div
-                  key={f.name}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.08 }}
-                  className="text-center"
-                >
-                  <div className="mx-auto mb-4 inline-flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-orange-400 to-red-500 text-white text-2xl font-extrabold shadow-lg">
-                    {f.name.charAt(0)}
-                  </div>
-                  <h3 className="text-lg font-bold text-black">{f.name}</h3>
-                  <p className="text-sm text-orange-500 font-semibold">{f.role}</p>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* CTA */}
-        <section className="bg-gradient-to-br from-[#1a0a02] via-[#2a1405] to-[#0F0F0F] py-20 relative overflow-hidden">
-          <div className="absolute -right-20 -top-20 h-80 w-80 rounded-full bg-orange-500/20 blur-3xl" />
-          <div className="container mx-auto px-4 md:px-6 max-w-4xl text-center relative">
-            <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-6">
-              Ready to build something that <span className="text-orange-400">actually works?</span>
-            </h2>
-            <button
-              type="button"
-              onClick={openEnquire}
-              className="inline-flex items-center gap-2 rounded-full bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 text-base font-bold transition-colors shadow-xl shadow-orange-500/30"
-            >
-              Start a Conversation <ArrowRight className="h-5 w-5" />
-            </button>
-          </div>
-        </section>
-      </main>
-
-      <PublicFooter />
-    </div>
+                Start a Conversation
+                <ArrowRight aria-hidden="true" />
+              </Button>
+            }
+          />
+        </Container>
+      </Section>
+    </>
   )
 }

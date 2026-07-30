@@ -1,0 +1,83 @@
+/**
+ * EXFLOW design tokens - Tailwind v4 CSS-first configuration.
+ *
+ * Every token declared in `@theme` is available both as a CSS variable
+ * (`var(--color-canvas)`) and as a Tailwind utility (`bg-canvas`,
+ * `text-content-muted`, `rounded-card`, `shadow-raise`, `max-w-wide`).
+ *
+ * This is the single token layer for the React app. The legacy static site's
+ * `frontend/css/theme.css` is retired and intentionally untouched.
+ *
+ * Requirements: 1.1, 1.2, 1.4, 1.5, 1.6, 9.3
+ */
+
+@import "tailwindcss";
+
+@theme {
+  /* ---- Color roles (Tech_Palette) ---- */
+  --color-canvas:        #070B14;  /* page background */
+  --color-surface:       #0E1526;  /* elevated surface */
+  --color-surface-high:  #16203A;  /* nested / hover surface */
+  --color-line:          #24314F;  /* border */
+  --color-line-strong:   #35456B;  /* border, emphasis */
+  --color-content:       #F3F6FC;  /* primary text */
+  --color-content-muted: #A7B4CC;  /* secondary text */
+  --color-tech-cyan:     #22D3EE;
+  --color-tech-blue:     #4F8DF7;
+  --color-tech-violet:   #8B5CF6;
+  --color-brand:         #F97316;  /* Brand_Accent - conversion only */
+  --color-brand-hover:   #EA580C;
+  --color-brand-ink:     #120800;  /* text on brand fill */
+  --color-success:       #34D399;
+  --color-warning:       #FBBF24;
+  --color-danger:        #FB7185;
+  --color-focus:         #7DE3F4;
+
+  /* ---- Typography: exactly 5 roles, strictly descending ---- */
+  --text-display:  clamp(2.5rem, 1.6rem + 3.2vw, 4rem);    /* 40 - 64px, 800, -0.02em */
+  --text-heading:  clamp(1.5rem, 1.15rem + 1.2vw, 2.25rem);/* 24 - 36px, 700, -0.01em */
+  --text-body:     1rem;                                   /* 16px, 400, 0 */
+  --text-label:    0.875rem;                               /* 14px, 600, 0.01em */
+  --text-meta:     0.75rem;                                /* 12px, 500, 0.08em */
+
+  --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-mono: 'Space Mono', ui-monospace, monospace;
+
+  /* ---- Spacing: 10 values, 0 - 96 ---- */
+  --space-0: 0px;   --space-1: 4px;   --space-2: 8px;   --space-3: 12px;
+  --space-4: 16px;  --space-5: 24px;  --space-6: 32px;  --space-7: 48px;
+  --space-8: 64px;  --space-9: 96px;
+
+  /* ---- Radius: 6 values, 0 - 999 ---- */
+  --radius-none: 0px; --radius-xs: 6px;  --radius-sm: 12px;
+  --radius-md: 20px;  --radius-lg: 28px; --radius-pill: 999px;
+
+  /* ---- Border width: 3 values, 0 - 2 ---- */
+  --border-0: 0px; --border-1: 1px; --border-2: 2px;
+
+  /* ---- Shadow: 4 levels ---- */
+  --shadow-flat:  0 1px 2px rgb(3 7 18 / 0.40);
+  --shadow-raise: 0 8px 24px -8px rgb(3 7 18 / 0.55);
+  --shadow-float: 0 24px 56px -16px rgb(3 7 18 / 0.65);
+  --shadow-glow:  0 0 0 1px rgb(79 141 247 / 0.35), 0 12px 40px -12px rgb(34 211 238 / 0.30);
+
+  /* ---- Icon sizes: 5 values, 16 - 48 ---- */
+  --size-icon-xs: 16px; --size-icon-sm: 20px; --size-icon-md: 24px;
+  --size-icon-lg: 32px; --size-icon-xl: 48px;
+
+  /* ---- Content widths: 4 values, 640 - 1440 (see Requirement Reconciliation) ---- */
+  --container-prose:  640px;
+  --container-narrow: 960px;
+  --container-wide:   1200px;
+  --container-max:    1440px;
+
+  /* ---- Motion: all <= 600ms ---- */
+  --duration-instant: 90ms;  --duration-fast: 160ms;
+  --duration-base:    240ms; --duration-slow: 420ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+  /* ---- Other ---- */
+  --size-touch: 44px;
+  --measure: 68ch;   /* body-text line length cap */
+}
