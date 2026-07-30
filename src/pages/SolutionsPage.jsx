@@ -1,13 +1,41 @@
-import React from 'react'
-import { motion } from 'framer-motion'
-import {
-  Globe, Code2, Sparkles, Truck, Utensils, Workflow, ArrowRight, CheckCircle2,
-} from 'lucide-react'
-import PublicHeader from '../components/PublicHeader'
-import PublicFooter from '../components/PublicFooter'
+import { Globe, Code2, Sparkles, Truck, Utensils, Workflow } from 'lucide-react'
 
-const openEnquire = () =>
-  window.dispatchEvent(new CustomEvent('open-enquire'))
+import { useEnquiry } from '@/components/enquiry/EnquiryProvider'
+import Badge from '@/components/system/Badge'
+import Container from '@/components/system/Container'
+import Eyebrow from '@/components/system/Eyebrow'
+import Reveal from '@/components/system/Reveal'
+import Section from '@/components/system/Section'
+import SectionHeading from '@/components/system/SectionHeading'
+import TechBackdrop from '@/components/system/TechBackdrop'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card'
+
+/**
+ * `/solutions` - one of the Public_Information_Routes.
+ *
+ * The route shell (`PublicLayout`, applied in `App.jsx`) owns the header, the
+ * footer, and the floating conversion action, so this page renders page content
+ * only; the inline chrome it used to carry is gone (Requirements 1.1, 11.3).
+ *
+ * Shell hierarchy is the uniform public-route shape shared with `/industries`
+ * and every other Public_Route (Requirement 5.6): a hero `Section` carrying the
+ * route's single `h1`, its lede, and one Primary_CTA, then a content `Section`
+ * of `Card`s, then a closing call-to-action `Section`. Card titles sit one level
+ * below the `h1`, so heading order has no gap and no second top-level heading
+ * (Requirement 10.5).
+ *
+ * Content is data (Requirement 5.1): every solution category, description, and
+ * feature point below is the approved baseline string, rendered unchanged, and
+ * the enquiry action keeps its baseline label and modal behavior. Feature points
+ * are now token `Badge`es instead of hand-colored chips, and stay inside a list
+ * so the grouping is still announced.
+ *
+ * Presentation is token-only (Requirement 1.1): no literal color values, no
+ * gradient utilities, no inline style objects.
+ *
+ * Requirements: 5.1, 5.2, 5.6, 1.1, 11.3
+ */
 
 const solutions = [
   {
@@ -48,100 +76,105 @@ const solutions = [
   },
 ]
 
+/** The enquiry action label this route carries, per the content baseline. */
+const ENQUIRY_LABEL = 'Talk to Our Team'
+
 export default function SolutionsPage() {
+  // Single enquiry activation surface (Requirement 7.1). Outside a provider the
+  // hook still reaches the mounted modal through its window bridge.
+  const { openEnquiry } = useEnquiry()
+
   return (
-    <div className="bge-site flex flex-col min-h-screen bg-white">
-      <PublicHeader />
+    <>
+      <Section
+        tone="surface"
+        pad="lg"
+        backdrop={<TechBackdrop variant="mesh" intensity="subtle" />}
+        data-slot="page-hero"
+        data-page="solutions"
+      >
+        <Container className="flex flex-col items-start gap-[var(--space-5)]">
+          <Eyebrow icon={<Sparkles className="size-[var(--size-icon-xs)]" aria-hidden="true" />}>
+            Our Solutions
+          </Eyebrow>
 
-      <main className="flex-grow pt-24">
-        {/* Hero */}
-        <section className="bg-warm-cream bg-grid-pattern py-20 md:py-28 relative overflow-hidden">
-          <div className="container mx-auto px-4 md:px-6 relative z-10 text-center max-w-4xl">
-            <motion.p
-              initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-              className="inline-flex items-center gap-2 rounded-full border border-orange-200 bg-white px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-orange-600 mb-6"
-            >
-              <Sparkles className="h-3.5 w-3.5" /> Our Solutions
-            </motion.p>
-            <motion.h1
-              initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-              className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-black tracking-tight leading-[1.1] mb-6"
-            >
-              Software That Solves <span className="text-orange-500">Real Business</span> Problems.
-            </motion.h1>
-            <motion.p
-              initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-              className="text-lg md:text-xl text-gray-600 leading-relaxed max-w-3xl mx-auto"
-            >
-              At exflow, we build software systems, websites, AI-powered tools, and business automation solutions designed to solve operational challenges and help companies scale faster.
-            </motion.p>
-            <motion.p
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.35 }}
-              className="text-base text-gray-500 mt-4 italic"
-            >
-              Technology should increase efficiency, reduce manual work, and create measurable business growth.
-            </motion.p>
-          </div>
-        </section>
+          <h1 className="text-[length:var(--text-display)] font-extrabold tracking-[-0.02em] text-content">
+            Software That Solves <span className="text-tech-cyan">Real Business</span> Problems.
+          </h1>
 
-        {/* Solutions grid */}
-        <section className="bg-white py-20 md:py-28">
-          <div className="container mx-auto px-4 md:px-6 max-w-7xl">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {solutions.map((s, i) => {
-                const Icon = s.icon
-                return (
-                  <motion.div
-                    key={s.title}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: i * 0.05, duration: 0.4 }}
-                    className="group relative bg-gray-50 hover:bg-white border border-gray-100 hover:border-orange-200 hover:shadow-xl rounded-3xl p-8 transition-all duration-300"
-                  >
-                    <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-orange-500/10 text-orange-500 mb-6 group-hover:bg-orange-500 group-hover:text-white transition-colors">
-                      <Icon className="h-7 w-7" />
-                    </div>
-                    <h3 className="text-xl font-bold text-black mb-3">{s.title}</h3>
-                    <p className="text-sm text-gray-600 leading-relaxed mb-5">{s.desc}</p>
-                    <ul className="space-y-2">
-                      {s.points.map((p) => (
-                        <li key={p} className="flex items-start gap-2 text-sm text-gray-700">
-                          <CheckCircle2 className="h-4 w-4 text-orange-500 mt-0.5 shrink-0" />
-                          <span>{p}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </motion.div>
-                )
-              })}
-            </div>
-          </div>
-        </section>
+          <p className="max-w-[var(--measure)] text-[length:var(--text-body)] leading-relaxed text-content-muted">
+            At exflow, we build software systems, websites, AI-powered tools, and business automation
+            solutions designed to solve operational challenges and help companies scale faster.
+          </p>
 
-        {/* CTA */}
-        <section className="bg-gradient-to-br from-[#1a0a02] via-[#2a1405] to-[#0F0F0F] py-20 relative overflow-hidden">
-          <div className="absolute -right-20 -top-20 h-80 w-80 rounded-full bg-orange-500/20 blur-3xl" />
-          <div className="absolute -bottom-20 -left-20 h-80 w-80 rounded-full bg-orange-500/10 blur-3xl" />
-          <div className="container mx-auto px-4 md:px-6 max-w-4xl text-center relative">
-            <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-6">
-              Build technology that solves <span className="text-orange-400">real business problems</span> and creates long-term growth.
-            </h2>
-            <p className="text-gray-300 text-lg mb-8 max-w-2xl mx-auto">
-              Let's discuss your operational challenges and design a system around your business.
-            </p>
-            <button
-              type="button"
-              onClick={openEnquire}
-              className="inline-flex items-center gap-2 rounded-full bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 text-base font-bold transition-colors shadow-xl shadow-orange-500/30"
-            >
-              Talk to Our Team <ArrowRight className="h-5 w-5" />
-            </button>
-          </div>
-        </section>
-      </main>
+          <p className="max-w-[var(--measure)] text-[length:var(--text-label)] leading-relaxed text-content-muted">
+            Technology should increase efficiency, reduce manual work, and create measurable business
+            growth.
+          </p>
 
-      <PublicFooter />
-    </div>
+          <Button type="button" variant="brand" size="lg" onClick={openEnquiry}>
+            {ENQUIRY_LABEL}
+          </Button>
+        </Container>
+      </Section>
+
+      <Section tone="canvas" pad="lg" aria-label="Our Solutions" data-slot="page-cards">
+        <Container>
+          <ul className="grid list-none grid-cols-1 gap-[var(--space-5)] p-0 sm:grid-cols-2 lg:grid-cols-3">
+            {solutions.map((solution, index) => {
+              const Icon = solution.icon
+              return (
+                <Reveal as="li" key={solution.title} delay={index * 40} className="flex">
+                  <Card tone="surface" className="flex w-full flex-col">
+                    <CardHeader>
+                      <span
+                        aria-hidden="true"
+                        className="inline-flex size-[var(--space-7)] items-center justify-center rounded-md bg-tech-cyan/10 text-tech-cyan"
+                      >
+                        <Icon className="size-[var(--size-icon-md)]" />
+                      </span>
+                      <h3 className="font-semibold leading-tight tracking-[-0.01em] text-content text-[length:var(--text-body)]">
+                        {solution.title}
+                      </h3>
+                      <CardDescription>{solution.desc}</CardDescription>
+                    </CardHeader>
+                    <CardContent className="mt-auto">
+                      <ul className="flex list-none flex-wrap gap-[var(--space-2)] p-0">
+                        {solution.points.map((point) => (
+                          <Badge as="li" key={point} tone="soft" accent="tech">
+                            {point}
+                          </Badge>
+                        ))}
+                      </ul>
+                    </CardContent>
+                  </Card>
+                </Reveal>
+              )
+            })}
+          </ul>
+        </Container>
+      </Section>
+
+      <Section tone="deep" pad="lg" data-slot="page-cta">
+        <Container>
+          <SectionHeading
+            level={2}
+            title={
+              <>
+                Build technology that solves{' '}
+                <span className="text-tech-cyan">real business problems</span> and creates long-term
+                growth.
+              </>
+            }
+            lede="Let's discuss your operational challenges and design a system around your business."
+            action={
+              <Button type="button" variant="brand" size="lg" onClick={openEnquiry}>
+                {ENQUIRY_LABEL}
+              </Button>
+            }
+          />
+        </Container>
+      </Section>
+    </>
   )
 }

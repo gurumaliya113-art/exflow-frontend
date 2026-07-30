@@ -1,14 +1,67 @@
-import React from 'react'
-import { motion } from 'framer-motion'
 import {
-  Phone, Mail, MapPin, ArrowRight, Send, Code2, Globe, Sparkles, Workflow, Truck, Utensils, Building2,
+  Building2,
+  Code2,
+  Globe,
+  Mail,
+  MapPin,
+  Phone,
+  Send,
+  Sparkles,
+  Truck,
+  Utensils,
+  Workflow,
 } from 'lucide-react'
-import PublicHeader from '../components/PublicHeader'
-import PublicFooter from '../components/PublicFooter'
 
-const openEnquire = () =>
-  window.dispatchEvent(new CustomEvent('open-enquire'))
+import { useEnquiry } from '@/components/enquiry/EnquiryProvider'
+import Badge from '@/components/system/Badge'
+import Container from '@/components/system/Container'
+import ExternalLink from '@/components/system/ExternalLink'
+import Section from '@/components/system/Section'
+import SectionHeading from '@/components/system/SectionHeading'
+import TechBackdrop from '@/components/system/TechBackdrop'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+import { CONTACT } from '@/content/site'
+import { cn } from '@/lib/utils'
 
+/**
+ * `/contact` - the contact route, on the uniform public page shell.
+ *
+ * The route shell (`PublicLayout`, applied in `App.jsx`) owns the header, the
+ * footer, and the floating conversion action, so this page renders page content
+ * only; the inline header and footer it used to mount are gone (Requirements
+ * 2.1, 11.3).
+ *
+ * Shell order matches every other public route (Requirement 5.6): hero
+ * `Section` with the route's single h1, then a content `Section` of `Card`s,
+ * then a closing call-to-action `Section`.
+ *
+ * Every baseline value survives (Requirement 5.5): the email address, the
+ * telephone number, the website address, the office line, the seven-item
+ * service list, and both enquiry actions with their baseline labels. The phone
+ * and email values come from `content/site.js` `CONTACT`, so there is one
+ * source for them across the page and the footer.
+ *
+ * The website destination renders through `ExternalLink`, which is the only
+ * approved way to emit an external destination: it always opens exactly one
+ * new browser context and always carries both opener-blocking rel tokens
+ * (Requirements 5.7, 11.6). The telephone and email destinations stay plain
+ * anchors with byte-identical href values.
+ *
+ * Both enquiry actions go through the shared `useEnquiry()` opener, so the
+ * Enquiry_Modal keeps exactly one activation surface (Requirement 6.10) with
+ * the behavior it had before the redesign (Requirement 11.1).
+ *
+ * Presentation is token-only: no literal color values anywhere on the page
+ * (Requirements 1.1, 1.2).
+ *
+ * Requirements: 1.1, 1.2, 5.5, 5.6, 5.7, 10.5, 11.1, 11.3, 11.6
+ */
+
+/** The EXFLOW website, verbatim from the pre-redesign page. */
+export const WEBSITE = { label: 'exflow.in', href: 'https://exflow.in' }
+
+/** Service list, verbatim (label and order) from the pre-redesign page. */
 const services = [
   { icon: Code2, label: 'Custom Software Development' },
   { icon: Globe, label: 'Website Development' },
@@ -19,166 +72,178 @@ const services = [
   { icon: Building2, label: 'Industry-Specific Platforms' },
 ]
 
-export default function ContactPage() {
+/** Shared type/color treatment for the two typed (tel/mailto) destinations. */
+const contactLinkClass =
+  'font-semibold text-content underline-offset-4 transition-[color] hover:text-tech-cyan hover:underline'
+
+/** Decorative icon chip used by both card lists. */
+function IconChip({ icon: Icon }) {
   return (
-    <div className="bge-site flex flex-col min-h-screen bg-white">
-      <PublicHeader />
+    <span
+      aria-hidden="true"
+      className="inline-flex size-[var(--space-7)] shrink-0 items-center justify-center rounded-sm bg-tech-cyan/10 text-tech-cyan"
+    >
+      <Icon
+        aria-hidden="true"
+        focusable="false"
+        className="size-[var(--size-icon-sm)]"
+      />
+    </span>
+  )
+}
 
-      <main className="flex-grow pt-24">
-        {/* Hero */}
-        <section className="bg-warm-cream bg-grid-pattern py-20 md:py-28 relative overflow-hidden">
-          <div className="container mx-auto px-4 md:px-6 relative z-10 text-center max-w-4xl">
-            <motion.p
-              initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-              className="inline-flex items-center gap-2 rounded-full border border-orange-200 bg-white px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-orange-600 mb-6"
-            >
-              <Send className="h-3.5 w-3.5" /> Get In Touch
-            </motion.p>
-            <motion.h1
-              initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-              className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-black tracking-tight leading-[1.1] mb-6"
-            >
-              Let's Build Something <span className="text-orange-500">Great Together.</span>
-            </motion.h1>
-            <motion.p
-              initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-              className="text-lg md:text-xl text-gray-600 leading-relaxed max-w-3xl mx-auto"
-            >
-              Need software, AI solutions, websites, automation systems, or custom digital products? Contact exflow.
-            </motion.p>
-          </div>
-        </section>
-
-        {/* Contact details + form CTA */}
-        <section className="bg-white py-20 md:py-24">
-          <div className="container mx-auto px-4 md:px-6 max-w-6xl">
-            <div className="grid md:grid-cols-2 gap-8">
-              {/* Contact info card */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="relative overflow-hidden bg-gradient-to-br from-[#1a0a02] via-[#2a1405] to-[#0F0F0F] text-white rounded-3xl p-8 md:p-10"
-              >
-                <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-orange-500/20 blur-3xl" />
-                <div className="relative">
-                  <h2 className="text-2xl md:text-3xl font-extrabold mb-8">Reach Us Directly</h2>
-
-                  <div className="space-y-6">
-                    <div className="flex items-start gap-4">
-                      <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-orange-500/20 text-orange-400">
-                        <Mail className="h-5 w-5" />
-                      </span>
-                      <div>
-                        <div className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-1">Email</div>
-                        <a href="mailto:business.gurutron@gmail.com" className="text-base md:text-lg font-semibold hover:text-orange-400 transition-colors break-all">
-                          business.gurutron@gmail.com
-                        </a>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start gap-4">
-                      <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-orange-500/20 text-orange-400">
-                        <Phone className="h-5 w-5" />
-                      </span>
-                      <div>
-                        <div className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-1">Phone</div>
-                        <a href="tel:+918053317489" className="text-base md:text-lg font-semibold hover:text-orange-400 transition-colors">
-                          +91 80533 17489
-                        </a>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start gap-4">
-                      <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-orange-500/20 text-orange-400">
-                        <Globe className="h-5 w-5" />
-                      </span>
-                      <div>
-                        <div className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-1">Website</div>
-                        <a href="https://exflow.in" target="_blank" rel="noopener noreferrer" className="text-base md:text-lg font-semibold hover:text-orange-400 transition-colors">
-                          exflow.in
-                        </a>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start gap-4">
-                      <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-orange-500/20 text-orange-400">
-                        <MapPin className="h-5 w-5" />
-                      </span>
-                      <div>
-                        <div className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-1">Office</div>
-                        <p className="text-base md:text-lg font-semibold">Kailash Nagar, Narnaul</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={openEnquire}
-                    className="mt-10 inline-flex w-full items-center justify-center gap-2 rounded-full bg-orange-500 hover:bg-orange-600 text-white px-8 py-3.5 text-base font-bold transition-colors shadow-xl shadow-orange-500/30"
-                  >
-                    Open Enquiry Form <ArrowRight className="h-5 w-5" />
-                  </button>
-                </div>
-              </motion.div>
-
-              {/* Services */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.1 }}
-                className="bg-gray-50 border border-gray-100 rounded-3xl p-8 md:p-10"
-              >
-                <p className="text-sm font-bold uppercase tracking-widest text-orange-500 mb-2">What We Build</p>
-                <h2 className="text-2xl md:text-3xl font-extrabold text-black mb-8">Services Available</h2>
-
-                <ul className="space-y-3">
-                  {services.map((s, i) => {
-                    const Icon = s.icon
-                    return (
-                      <motion.li
-                        key={s.label}
-                        initial={{ opacity: 0, x: -10 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: 0.15 + i * 0.04 }}
-                        className="flex items-center gap-4 bg-white border border-gray-100 rounded-xl px-4 py-3.5 hover:border-orange-200 hover:shadow-sm transition-all"
-                      >
-                        <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-orange-500/10 text-orange-500">
-                          <Icon className="h-5 w-5" />
-                        </span>
-                        <span className="text-sm md:text-base font-semibold text-gray-800">{s.label}</span>
-                      </motion.li>
-                    )
-                  })}
-                </ul>
-              </motion.div>
-            </div>
-          </div>
-        </section>
-
-        {/* Final CTA */}
-        <section className="bg-gradient-to-br from-orange-50 to-amber-50 py-20 border-t border-orange-100">
-          <div className="container mx-auto px-4 md:px-6 max-w-3xl text-center">
-            <h2 className="text-3xl md:text-4xl font-extrabold text-black mb-4">
-              Partner with <span className="text-orange-500">exflow</span> to build technology designed for growth.
-            </h2>
-            <p className="text-gray-600 text-lg mb-8">
-              Tell us about your project. We respond within 24 hours.
-            </p>
-            <button
-              type="button"
-              onClick={openEnquire}
-              className="inline-flex items-center gap-2 rounded-full bg-orange-500 hover:bg-orange-600 text-white px-10 py-4 text-base font-bold transition-colors shadow-xl shadow-orange-500/30"
-            >
-              Request A Quote <ArrowRight className="h-5 w-5" />
-            </button>
-          </div>
-        </section>
-      </main>
-
-      <PublicFooter />
+/** One label/value pair in the "Reach Us Directly" list. */
+function ContactRow({ icon, label, children }) {
+  return (
+    <div className="flex items-start gap-[var(--space-4)]">
+      <IconChip icon={icon} />
+      <div className="min-w-0 flex flex-col gap-[var(--space-1)]">
+        <dt className="text-[length:var(--text-meta)] font-medium uppercase tracking-[0.08em] text-content-muted">
+          {label}
+        </dt>
+        <dd className="text-[length:var(--text-body)] break-words">{children}</dd>
+      </div>
     </div>
+  )
+}
+
+export default function ContactPage() {
+  // Single enquiry activation surface. Outside a provider the hook still
+  // reaches the mounted modal through its window bridge, so no CTA is inert.
+  const { openEnquiry } = useEnquiry()
+
+  return (
+    <>
+      <Section
+        tone="surface"
+        pad="lg"
+        backdrop={<TechBackdrop variant="mesh" intensity="subtle" />}
+        data-slot="contact-hero"
+      >
+        <Container className="flex flex-col items-start gap-[var(--space-5)]">
+          <Badge accent="tech">
+            <Send
+              aria-hidden="true"
+              focusable="false"
+              className="size-[var(--size-icon-xs)]"
+            />
+            Get In Touch
+          </Badge>
+
+          <h1 className="text-[length:var(--text-display)] font-extrabold tracking-[-0.02em] text-content">
+            Let&apos;s Build Something Great Together.
+          </h1>
+
+          <p className="max-w-[var(--measure)] text-[length:var(--text-body)] leading-relaxed text-content-muted">
+            Need software, AI solutions, websites, automation systems, or custom
+            digital products? Contact exflow.
+          </p>
+
+          <Button
+            type="button"
+            variant="brand"
+            size="lg"
+            onClick={openEnquiry}
+            data-slot="contact-enquiry-cta"
+          >
+            Open Enquiry Form
+          </Button>
+        </Container>
+      </Section>
+
+      <Section tone="canvas" pad="lg" data-slot="contact-details">
+        <Container className="grid grid-cols-1 gap-[var(--space-6)] md:grid-cols-2">
+          <Card
+            tone="surface"
+            className="p-[var(--space-6)] md:p-[var(--space-7)]"
+            data-slot="contact-reach-us"
+          >
+            <SectionHeading level={2} title="Reach Us Directly" />
+
+            <dl className="mt-[var(--space-6)] flex flex-col gap-[var(--space-5)]">
+              <ContactRow icon={Mail} label="Email">
+                <a href={CONTACT.email.href} className={cn(contactLinkClass)}>
+                  {CONTACT.email.label}
+                </a>
+              </ContactRow>
+
+              <ContactRow icon={Phone} label="Phone">
+                <a href={CONTACT.phone.href} className={cn(contactLinkClass)}>
+                  {CONTACT.phone.label}
+                </a>
+              </ContactRow>
+
+              <ContactRow icon={Globe} label="Website">
+                {/* Only approved external destination surface. */}
+                <ExternalLink href={WEBSITE.href} className="font-semibold">
+                  {WEBSITE.label}
+                </ExternalLink>
+              </ContactRow>
+
+              <ContactRow icon={MapPin} label={CONTACT.office.label}>
+                <span className="font-semibold text-content">
+                  {CONTACT.office.address}
+                </span>
+              </ContactRow>
+            </dl>
+          </Card>
+
+          <Card
+            tone="surface"
+            className="p-[var(--space-6)] md:p-[var(--space-7)]"
+            data-slot="contact-services"
+          >
+            <SectionHeading
+              level={2}
+              eyebrow="What We Build"
+              title="Services Available"
+            />
+
+            <ul className="mt-[var(--space-6)] flex flex-col gap-[var(--space-3)]">
+              {services.map((service) => (
+                <li
+                  key={service.label}
+                  className="flex items-center gap-[var(--space-4)] rounded-sm border border-line bg-surface-high px-[var(--space-4)] py-[var(--space-3)]"
+                >
+                  <IconChip icon={service.icon} />
+                  <span className="text-[length:var(--text-body)] font-semibold text-content">
+                    {service.label}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </Card>
+        </Container>
+      </Section>
+
+      <Section
+        tone="surface"
+        pad="lg"
+        backdrop={<TechBackdrop variant="grid" intensity="subtle" />}
+        data-slot="contact-closing-cta"
+      >
+        <Container
+          width="narrow"
+          className="flex flex-col items-center gap-[var(--space-5)]"
+        >
+          <SectionHeading
+            level={2}
+            align="center"
+            title="Partner with exflow to build technology designed for growth."
+            lede="Tell us about your project. We respond within 24 hours."
+          />
+
+          <Button
+            type="button"
+            variant="brand"
+            size="lg"
+            onClick={openEnquiry}
+            data-slot="contact-quote-cta"
+          >
+            Request A Quote
+          </Button>
+        </Container>
+      </Section>
+    </>
   )
 }
