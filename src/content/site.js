@@ -42,8 +42,8 @@ export const LEGACY_NAV = [
 export const CONTACT = {
   phone: { label: '+91 80533 17489', href: 'tel:+918053317489' },
   email: {
-    label: 'business.gurutron@gmail.com',
-    href: 'mailto:business.gurutron@gmail.com',
+    label: 'azadgupta1010@gmail.com',
+    href: 'mailto:azadgupta1010@gmail.com',
   },
   office: { label: 'Office', address: 'Kailash Nagar, Narnaul' },
 }
@@ -92,3 +92,14 @@ export const FOOTER_LEGAL_LINKS = [
 
 /** Rights statement suffix; rendered as `© {currentYear} exflow. All rights reserved.` */
 export const FOOTER_RIGHTS = 'exflow. All rights reserved.'
+
+/**
+ * Parent company. ExFlow is the technology business under ExCompany, so the
+ * footer carries a quiet link back to the holding company — the same way the
+ * ExCompany site links out to ExFlow. Update `href` when the ExCompany domain
+ * is finalised.
+ */
+export const PARENT_COMPANY = {
+  label: 'Part of ExCompany',
+  href: 'https://excompany.in',
+}

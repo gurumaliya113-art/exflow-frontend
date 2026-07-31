@@ -160,7 +160,7 @@ describe('contact column (Requirement 7.7)', () => {
     expect(phone).toHaveAttribute('href', 'tel:+918053317489')
 
     const email = screen.getByRole('link', { name: CONTACT.email.label })
-    expect(email).toHaveAttribute('href', 'mailto:business.gurutron@gmail.com')
+    expect(email).toHaveAttribute('href', 'mailto:azadgupta1010@gmail.com')
 
     expect(screen.getByText('Kailash Nagar, Narnaul')).toBeInTheDocument()
   })

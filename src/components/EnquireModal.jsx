@@ -131,8 +131,8 @@ export default function EnquireModal() {
                       </span>
                       <div>
                         <div className="text-xs font-semibold uppercase tracking-wider text-gray-400">Email</div>
-                        <a href="mailto:business.gurutron@gmail.com" className="block text-lg font-semibold text-white hover:text-orange-400 transition-colors break-all">
-                          business.gurutron@gmail.com
+                        <a href="mailto:azadgupta1010@gmail.com" className="block text-lg font-semibold text-white hover:text-orange-400 transition-colors break-all">
+                          azadgupta1010@gmail.com
                         </a>
                       </div>
                     </div>

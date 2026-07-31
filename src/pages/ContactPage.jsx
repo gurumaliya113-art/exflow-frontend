@@ -59,7 +59,7 @@ import { cn } from '@/lib/utils'
  */
 
 /** The EXFLOW website, verbatim from the pre-redesign page. */
-export const WEBSITE = { label: 'exflow.in', href: 'https://exflow.in' }
+export const WEBSITE = { label: 'exflow.dpdns.org', href: 'https://exflow.dpdns.org' }
 
 /** Service list, verbatim (label and order) from the pre-redesign page. */
 const services = [

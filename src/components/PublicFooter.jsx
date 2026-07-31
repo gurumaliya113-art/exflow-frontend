@@ -66,8 +66,8 @@ export default function PublicFooter() {
             </a>
 
             <h4 className="font-bold text-lg mb-2">Email</h4>
-            <a href="mailto:business.gurutron@gmail.com" className="block text-gray-400 hover:text-orange-500 transition-colors text-sm break-all">
-              business.gurutron@gmail.com
+            <a href="mailto:azadgupta1010@gmail.com" className="block text-gray-400 hover:text-orange-500 transition-colors text-sm break-all">
+              azadgupta1010@gmail.com
             </a>
           </div>
         </div>
