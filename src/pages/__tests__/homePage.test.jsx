@@ -1,27 +1,17 @@
 /**
- * Homepage migration tests (task 12.1).
+ * Homepage tests.
  *
- * These cover the route as it renders on the redesigned shell:
- * - the route's single top-level heading is the baseline hero headline
- *   (Requirement 10.5);
- * - the page renders page content only - no header, footer, or floating
- *   conversion action of its own, because the shell owns all three
- *   (Requirements 1.1, 2.1);
- * - every Content_Region's key strings survive the migration (Requirements
- *   4.1, 4.3, 4.4, 4.5);
- * - the scheduling calendar's selected day is page state that survives the
- *   Enquiry_Modal opening (Requirements 4.7, 4.8);
- * - a "Book A Call" conversion action opens the shared enquiry state
- *   (Requirement 4.7);
- * - "View Portfolio" targets the portfolio route (Requirement 4.6);
- * - and a source-level guard proves the token/chrome discipline holds
- *   (Requirements 1.1, 1.3).
+ * The homepage was repositioned from a "website/app development" pitch to a
+ * business-outcome "technology partner" message. These tests pin the structural
+ * guarantees that must survive any copy change (single h1, no chrome, token
+ * discipline, portfolio link, enquiry CTA, calendar persistence) and the key
+ * strings of each content region in the current copy.
  */
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 
 import { describe, expect, it } from 'vitest'
-import { act, fireEvent, render, screen, within } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 
 import { vi } from 'vitest'
@@ -31,8 +21,7 @@ vi.mock('@/lib/supabase', () => import('@/test/mocks/supabase'))
 import EnquiryProvider from '../../components/enquiry/EnquiryProvider'
 import NewHomePage from '../NewHomePage'
 
-const HEADLINE =
-  'Websites & Software That Actually Grow Your Business — Not Just Sit There Looking Pretty.'
+const HEADLINE = 'We Build Technology That Helps Businesses Grow.'
 
 /** Render the page inside the same primitives the shell provides at runtime. */
 function renderHome() {
@@ -46,7 +35,7 @@ function renderHome() {
 }
 
 describe('homepage heading structure', () => {
-  it('exposes exactly one h1, and it is the baseline hero headline', () => {
+  it('exposes exactly one h1, and it is the hero headline', () => {
     renderHome()
 
     const level1 = screen.getAllByRole('heading', { level: 1 })
@@ -63,73 +52,79 @@ describe('the page renders content only (shell owns the chrome)', () => {
     expect(container.querySelector('footer')).toBeNull()
     expect(screen.queryByRole('banner')).toBeNull()
     expect(screen.queryByRole('contentinfo')).toBeNull()
-    // No inline mobile menu control from the old sticky navbar.
     expect(screen.queryByRole('button', { name: /toggle menu/i })).toBeNull()
   })
 })
 
-describe('every Content_Region survives the migration', () => {
-  it('keeps the hero trust indicators', () => {
+describe('every content region renders', () => {
+  it('keeps the hero value proposition and positioning cues', () => {
     renderHome()
-    expect(screen.getByText(/Google — 4\.8 Star Ratings/)).toBeInTheDocument()
-    expect(screen.getByText(/Software & Co — 4\.9\/5\.0/)).toBeInTheDocument()
+    expect(
+      screen.getByText(/We help businesses streamline operations, automate repetitive work/),
+    ).toBeInTheDocument()
+    expect(screen.getByText('Automate')).toBeInTheDocument()
+    expect(screen.getByText('Optimise')).toBeInTheDocument()
+    expect(screen.getByText('Scale')).toBeInTheDocument()
   })
 
-  it('keeps the client indicators, separate from the metrics', () => {
+  it('keeps the client indicators', () => {
     renderHome()
-    expect(screen.getByText('Trusted By B2B Businesses Worldwide')).toBeInTheDocument()
+    expect(screen.getByText('Trusted By Businesses Across Industries')).toBeInTheDocument()
     expect(screen.getByText('RK Travels')).toBeInTheDocument()
     expect(screen.getByText('Adarsh School')).toBeInTheDocument()
     expect(screen.getByText('Shree Krishna Drycleaners')).toBeInTheDocument()
   })
 
-  it('keeps all four business metrics with their labels', () => {
-    const { container } = renderHome()
-    const values = Array.from(
-      container.querySelectorAll('[data-slot="stat-value"]'),
-    ).map((node) => node.textContent)
-    expect(values).toEqual(['35+', '3+', '3+', '15+'])
-    expect(screen.getByText('Projects Delivered')).toBeInTheDocument()
-    expect(screen.getByText('Countries Served')).toBeInTheDocument()
-    expect(screen.getByText('Years of Industry Experience')).toBeInTheDocument()
-    expect(screen.getByText('Tech Stack Mastered')).toBeInTheDocument()
-  })
-
-  it('keeps the three service offerings', () => {
+  it('renders the business challenges we solve', () => {
     renderHome()
     expect(
-      screen.getByText('Custom Digital Solutions, Designed For Growth.'),
+      screen.getByText('Every growing business hits the same walls. We remove them.'),
     ).toBeInTheDocument()
-    expect(
-      screen.getByRole('heading', { name: 'Website Design & Development' }),
-    ).toBeInTheDocument()
-    expect(
-      screen.getByRole('heading', { name: 'Web Application Development' }),
-    ).toBeInTheDocument()
-    expect(
-      screen.getByRole('heading', { name: 'Search Engine Optimisation' }),
-    ).toBeInTheDocument()
+    expect(screen.getByText('Too much manual work')).toBeInTheDocument()
+    expect(screen.getByText('AI & Workflow Automation')).toBeInTheDocument()
+    expect(screen.getByText('One Custom Integrated Platform')).toBeInTheDocument()
   })
 
-  it('keeps the comparison region and both lists', () => {
+  it('renders the five outcome-based capabilities', () => {
     renderHome()
     expect(
-      screen.getByRole('heading', { name: 'Why would you want to settle for less?' }),
+      screen.getByText('Technology that solves real business problems.'),
     ).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: 'Other Agencies' })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: 'exflow' })).toBeInTheDocument()
-    expect(screen.getByText('Poor Collaboration')).toBeInTheDocument()
-    expect(screen.getByText('Limited Understanding of Your Business')).toBeInTheDocument()
-    expect(screen.getByText('Quick & Clear Communication')).toBeInTheDocument()
-    expect(screen.getByText('Deep Industry, Brand and UX Research')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Business Automation' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Customer Experience' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Business Management' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'AI Solutions' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Business Intelligence' })).toBeInTheDocument()
   })
 
-  it('keeps the development process region', () => {
+  it('renders the why-choose outcomes', () => {
     renderHome()
-    expect(screen.getByText('Step 03')).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: 'Development' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Why Businesses Choose ExFlow' })).toBeInTheDocument()
+    expect(screen.getByText('Reduce Operational Costs')).toBeInTheDocument()
+    expect(screen.getByText('Long-Term Technology Partner')).toBeInTheDocument()
+  })
+
+  it('renders the industries', () => {
+    renderHome()
+    expect(screen.getByText('Education')).toBeInTheDocument()
+    expect(screen.getByText('Healthcare')).toBeInTheDocument()
+    expect(screen.getByText('Startups')).toBeInTheDocument()
+  })
+
+  it('renders the business-framed process steps', () => {
+    renderHome()
+    expect(screen.getByRole('heading', { name: 'Understand Your Business' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Identify Problems' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Support & Improve' })).toBeInTheDocument()
+  })
+
+  it('frames featured work as problem, solution, impact', () => {
+    renderHome()
+    expect(screen.getByText('Problem')).toBeInTheDocument()
+    expect(screen.getByText('Our Solution')).toBeInTheDocument()
+    expect(screen.getByText('Business Impact')).toBeInTheDocument()
     expect(
-      screen.getByText(/our development team\s+translates them into a fully functional website/),
+      screen.getByText('Managing educational content, exams and students manually.'),
     ).toBeInTheDocument()
   })
 
@@ -142,18 +137,21 @@ describe('every Content_Region survives the migration', () => {
     ).toBeInTheDocument()
     expect(screen.getByText(/Gurtron completely transformed Gurukul Institute/)).toBeInTheDocument()
     expect(screen.getByText('Manoj Sir')).toBeInTheDocument()
-    expect(
-      screen.getByText('Senior Faculty Physics, Gurukul Institute'),
-    ).toBeInTheDocument()
   })
 
-  it('keeps the media placeholder region', () => {
-    renderHome()
-    expect(screen.getByRole('heading', { name: 'In the Media' })).toBeInTheDocument()
-    expect(screen.getByText('Media highlights coming soon')).toBeInTheDocument()
+  it('keeps all four impact metrics with their labels', () => {
+    const { container } = renderHome()
+    const values = Array.from(
+      container.querySelectorAll('[data-slot="stat-value"]'),
+    ).map((node) => node.textContent)
+    expect(values).toEqual(['500+', '50+', '35+', '10K+'])
+    expect(screen.getByText('Hours Saved / Month')).toBeInTheDocument()
+    expect(screen.getByText('Processes Automated')).toBeInTheDocument()
+    expect(screen.getByText('Businesses Digitised')).toBeInTheDocument()
+    expect(screen.getByText('Users Served')).toBeInTheDocument()
   })
 
-  it('keeps the calendar and contact regions', () => {
+  it('keeps the calendar and closing CTA regions', () => {
     renderHome()
     expect(
       screen.getByRole('heading', { name: "Let's Talk About Your Next Big Move." }),
@@ -161,35 +159,36 @@ describe('every Content_Region survives the migration', () => {
     expect(
       screen.getByRole('heading', { name: 'Schedule Your Discovery Call' }),
     ).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: 'Request A Quote' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { name: 'Ready to Transform Your Business?' }),
+    ).toBeInTheDocument()
     expect(screen.getByLabelText('Full Name*')).toBeInTheDocument()
     expect(screen.getByLabelText('Company Name*')).toBeInTheDocument()
     expect(screen.getByLabelText('Email*')).toBeInTheDocument()
   })
 })
 
-describe('portfolio action (Requirement 4.6)', () => {
-  it('links "View Portfolio" to the portfolio route', () => {
+describe('portfolio action', () => {
+  it('links "View Our Work" to the portfolio route', () => {
     renderHome()
-    const link = screen.getByRole('link', { name: 'View Portfolio' })
+    const link = screen.getByRole('link', { name: 'View Our Work' })
     expect(link).toHaveAttribute('href', '/portfolio')
   })
 })
 
-describe('enquiry action (Requirement 4.7)', () => {
-  it('a "Book A Call" CTA opens the shared enquiry modal', () => {
+describe('enquiry action', () => {
+  it('a "Start Your Project" CTA opens the shared enquiry modal', () => {
     renderHome()
     expect(screen.queryByRole('dialog')).toBeNull()
 
-    const bookACall = screen.getAllByRole('button', { name: 'Book A Call' })[0]
-    fireEvent.click(bookACall)
+    const cta = screen.getAllByRole('button', { name: 'Start Your Project' })[0]
+    fireEvent.click(cta)
 
     expect(screen.getByRole('dialog')).toBeInTheDocument()
   })
 })
 
-describe('calendar selection persistence (Requirements 4.7, 4.8)', () => {
-  /** The day-cell buttons rendered by the scheduling calendar. */
+describe('calendar selection persistence', () => {
   function dayButtons(container) {
     const calendar = container.querySelector('[data-slot="calendar"]')
     expect(calendar).not.toBeNull()
@@ -200,7 +199,6 @@ describe('calendar selection persistence (Requirements 4.7, 4.8)', () => {
     const { container } = renderHome()
 
     const days = dayButtons(container)
-    // Pick an in-month day that is not the initially selected one.
     const target = days.find(
       (button) =>
         button.getAttribute('data-selected-single') !== 'true' &&
@@ -217,9 +215,8 @@ describe('calendar selection persistence (Requirements 4.7, 4.8)', () => {
     )
     expect(selectedAfterPick.getAttribute('data-selected-single')).toBe('true')
 
-    // Open the modal via a conversion action; page state must be untouched.
     act(() => {
-      fireEvent.click(screen.getAllByRole('button', { name: 'Book A Call' })[0])
+      fireEvent.click(screen.getAllByRole('button', { name: 'Start Your Project' })[0])
     })
     expect(screen.getByRole('dialog')).toBeInTheDocument()
 

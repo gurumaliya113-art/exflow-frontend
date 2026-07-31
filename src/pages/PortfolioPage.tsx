@@ -86,6 +86,12 @@ export default function PortfolioPage() {
             Our Work
           </h1>
 
+          <p className="max-w-[var(--measure)] text-[length:var(--text-body)] leading-relaxed text-content-muted">
+            Real business problems, solved with technology. Each of these started with a challenge —
+            manual work, scattered operations, slow service — and became a system that saves time,
+            cuts costs, and helps the business grow.
+          </p>
+
           <Button
             type="button"
             variant="brand"

@@ -1,4 +1,4 @@
-import { Globe, Code2, Sparkles, Truck, Utensils, Workflow } from 'lucide-react'
+import { BarChart3, Bot, LayoutDashboard, Smartphone, Sparkles, Workflow } from 'lucide-react'
 
 import { useEnquiry } from '@/components/enquiry/EnquiryProvider'
 import Badge from '@/components/system/Badge'
@@ -14,74 +14,57 @@ import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/
 /**
  * `/solutions` - one of the Public_Information_Routes.
  *
- * The route shell (`PublicLayout`, applied in `App.jsx`) owns the header, the
- * footer, and the floating conversion action, so this page renders page content
- * only; the inline chrome it used to carry is gone (Requirements 1.1, 11.3).
+ * Positioning: ExFlow is a technology partner, not a "development shop", so this
+ * page is organised around business outcomes (automation, customer experience,
+ * management, AI, intelligence) rather than a menu of technical services. Each
+ * card leads with the problem it removes and the result it creates.
  *
- * Shell hierarchy is the uniform public-route shape shared with `/industries`
- * and every other Public_Route (Requirement 5.6): a hero `Section` carrying the
- * route's single `h1`, its lede, and one Primary_CTA, then a content `Section`
- * of `Card`s, then a closing call-to-action `Section`. Card titles sit one level
- * below the `h1`, so heading order has no gap and no second top-level heading
- * (Requirement 10.5).
- *
- * Content is data (Requirement 5.1): every solution category, description, and
- * feature point below is the approved baseline string, rendered unchanged, and
- * the enquiry action keeps its baseline label and modal behavior. Feature points
- * are now token `Badge`es instead of hand-colored chips, and stay inside a list
- * so the grouping is still announced.
- *
- * Presentation is token-only (Requirement 1.1): no literal color values, no
- * gradient utilities, no inline style objects.
+ * The route shell (`PublicLayout`) owns the header, footer, and floating action;
+ * this page renders content only. Shell hierarchy is the uniform public-route
+ * shape shared with `/industries`: a hero `Section` with the single `h1`, a
+ * content `Section` of `Card`s, then a closing call-to-action `Section`.
+ * Presentation is token-only: no literal colours, gradients, or inline styles.
  *
  * Requirements: 5.1, 5.2, 5.6, 1.1, 11.3
  */
 
 const solutions = [
   {
-    icon: Globe,
-    title: 'Custom Website Development',
-    desc: 'Business websites, startup landing pages, corporate sites, and scalable web platforms — optimized for user acquisition, performance, and search visibility. Every site is engineered for speed, conversions, and growth.',
-    points: ['SEO-optimized architecture', 'Conversion-focused UX', 'Lightning-fast load times'],
-  },
-  {
-    icon: Code2,
-    title: 'Custom Software Development',
-    desc: 'Businesses outgrow spreadsheets fast. We develop CRM systems, ERP tools, dashboards, internal management systems, and workflow automation platforms tailored to your exact operational requirements.',
-    points: ['CRM & ERP systems', 'Internal dashboards', 'Workflow automation'],
-  },
-  {
-    icon: Sparkles,
-    title: 'AI Solutions & Automation',
-    desc: 'We integrate artificial intelligence into business processes through OCR systems, AI analytics, automated reporting, chat systems, and intelligent workflows that reduce repetitive work and improve decision making.',
-    points: ['OCR & document AI', 'Predictive analytics', 'Automated reporting'],
-  },
-  {
-    icon: Truck,
-    title: 'Fleet Management Solutions',
-    desc: 'GPS tracking, fuel analytics, driver behavior monitoring, vehicle diagnostics, geofencing, maintenance alerts, and centralized dashboards to improve operational efficiency and reduce losses.',
-    points: ['Real-time GPS tracking', 'Fuel & maintenance analytics', 'Driver behavior reports'],
-  },
-  {
-    icon: Utensils,
-    title: 'Restaurant Management Systems',
-    desc: 'QR ordering, token systems, kitchen display systems, analytics dashboards, inventory tracking, staff management, and multi-outlet operational monitoring built for modern food businesses.',
-    points: ['QR & token ordering', 'Kitchen display systems', 'Multi-outlet dashboards'],
-  },
-  {
     icon: Workflow,
     title: 'Business Automation',
-    desc: 'Attendance systems, reporting automation, operational tracking, accounting tools, and analytics dashboards — we help businesses digitize processes and eliminate manual inefficiencies.',
-    points: ['Attendance & HR systems', 'Accounting tools', 'Operational tracking'],
+    desc: 'Eliminate the repetitive manual work that quietly eats hundreds of hours every month, so your team can focus on what actually moves the business forward.',
+    points: ['Workflow Automation', 'Document Automation', 'Approval Systems'],
+  },
+  {
+    icon: Smartphone,
+    title: 'Customer Experience',
+    desc: 'Give customers a faster, smoother experience across every touchpoint — website, booking, support — so more of them stay, trust you, and buy.',
+    points: ['Websites & Web Apps', 'Mobile Apps', 'Booking & Customer Portals'],
+  },
+  {
+    icon: LayoutDashboard,
+    title: 'Business Management',
+    desc: 'Run every part of your business from one place instead of scattered spreadsheets and chats — full visibility and control, from anywhere.',
+    points: ['ERP & CRM', 'Inventory & Finance', 'HR & Fleet'],
+  },
+  {
+    icon: Bot,
+    title: 'AI Solutions',
+    desc: 'Put AI to work so your business keeps responding, selling, and supporting customers around the clock — without hiring more people.',
+    points: ['AI Customer Support', 'AI WhatsApp & Voice', 'AI Sales Assistant'],
+  },
+  {
+    icon: BarChart3,
+    title: 'Business Intelligence',
+    desc: 'Turn the data you already have into clear, real-time answers, so you make better decisions faster and spot problems before they grow.',
+    points: ['Live Dashboards', 'Reports & Analytics', 'Performance Tracking'],
   },
 ]
 
-/** The enquiry action label this route carries, per the content baseline. */
+/** The enquiry action label this route carries. */
 const ENQUIRY_LABEL = 'Talk to Our Team'
 
 export default function SolutionsPage() {
-  // Single enquiry activation surface (Requirement 7.1). Outside a provider the
-  // hook still reaches the mounted modal through its window bridge.
   const { openEnquiry } = useEnquiry()
 
   return (
@@ -95,21 +78,21 @@ export default function SolutionsPage() {
       >
         <Container className="flex flex-col items-start gap-[var(--space-5)]">
           <Eyebrow icon={<Sparkles className="size-[var(--size-icon-xs)]" aria-hidden="true" />}>
-            Our Solutions
+            What We Do
           </Eyebrow>
 
           <h1 className="text-[length:var(--text-display)] font-extrabold tracking-[-0.02em] text-content">
-            Software That Solves <span className="text-tech-cyan">Real Business</span> Problems.
+            Technology That Solves <span className="text-tech-cyan">Real Business</span> Problems.
           </h1>
 
           <p className="max-w-[var(--measure)] text-[length:var(--text-body)] leading-relaxed text-content-muted">
-            At exflow, we build software systems, websites, AI-powered tools, and business automation
-            solutions designed to solve operational challenges and help companies scale faster.
+            We don't sell software — we solve business problems. Every system we build is designed to
+            save you time, reduce costs, and help you grow.
           </p>
 
           <p className="max-w-[var(--measure)] text-[length:var(--text-label)] leading-relaxed text-content-muted">
-            Technology should increase efficiency, reduce manual work, and create measurable business
-            growth.
+            Automation, AI, and management systems that make your business run better and give you
+            room to scale.
           </p>
 
           <Button type="button" variant="brand" size="lg" onClick={openEnquiry}>
@@ -118,7 +101,7 @@ export default function SolutionsPage() {
         </Container>
       </Section>
 
-      <Section tone="canvas" pad="lg" aria-label="Our Solutions" data-slot="page-cards">
+      <Section tone="canvas" pad="lg" aria-label="What We Do" data-slot="page-cards">
         <Container>
           <ul className="grid list-none grid-cols-1 gap-[var(--space-5)] p-0 sm:grid-cols-2 lg:grid-cols-3">
             {solutions.map((solution, index) => {
@@ -159,14 +142,8 @@ export default function SolutionsPage() {
         <Container>
           <SectionHeading
             level={2}
-            title={
-              <>
-                Build technology that solves{' '}
-                <span className="text-tech-cyan">real business problems</span> and creates long-term
-                growth.
-              </>
-            }
-            lede="Let's discuss your operational challenges and design a system around your business."
+            title="Ready to save time, cut costs, and grow faster?"
+            lede="Tell us the problem slowing your business down — we'll design the system that fixes it."
             action={
               <Button type="button" variant="brand" size="lg" onClick={openEnquiry}>
                 {ENQUIRY_LABEL}
