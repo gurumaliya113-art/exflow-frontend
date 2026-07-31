@@ -28,55 +28,41 @@ const ROUTES = [
     route: '/solutions',
     file: 'SolutionsPage.jsx',
     Page: SolutionsPage,
-    eyebrow: 'Our Solutions',
-    h1: 'Software That Solves Real Business Problems.',
-    closingHeading:
-      'Build technology that solves real business problems and creates long-term growth.',
+    eyebrow: 'What We Do',
+    h1: 'Technology That Solves Real Business Problems.',
+    closingHeading: 'Ready to save time, cut costs, and grow faster?',
     enquiryLabel: 'Talk to Our Team',
     cards: [
       {
-        title: 'Custom Website Development',
-        desc: 'Business websites, startup landing pages, corporate sites, and scalable web platforms — optimized for user acquisition, performance, and search visibility. Every site is engineered for speed, conversions, and growth.',
-        points: [
-          'SEO-optimized architecture',
-          'Conversion-focused UX',
-          'Lightning-fast load times',
-        ],
-      },
-      {
-        title: 'Custom Software Development',
-        desc: 'Businesses outgrow spreadsheets fast. We develop CRM systems, ERP tools, dashboards, internal management systems, and workflow automation platforms tailored to your exact operational requirements.',
-        points: ['CRM & ERP systems', 'Internal dashboards', 'Workflow automation'],
-      },
-      {
-        title: 'AI Solutions & Automation',
-        desc: 'We integrate artificial intelligence into business processes through OCR systems, AI analytics, automated reporting, chat systems, and intelligent workflows that reduce repetitive work and improve decision making.',
-        points: ['OCR & document AI', 'Predictive analytics', 'Automated reporting'],
-      },
-      {
-        title: 'Fleet Management Solutions',
-        desc: 'GPS tracking, fuel analytics, driver behavior monitoring, vehicle diagnostics, geofencing, maintenance alerts, and centralized dashboards to improve operational efficiency and reduce losses.',
-        points: [
-          'Real-time GPS tracking',
-          'Fuel & maintenance analytics',
-          'Driver behavior reports',
-        ],
-      },
-      {
-        title: 'Restaurant Management Systems',
-        desc: 'QR ordering, token systems, kitchen display systems, analytics dashboards, inventory tracking, staff management, and multi-outlet operational monitoring built for modern food businesses.',
-        points: ['QR & token ordering', 'Kitchen display systems', 'Multi-outlet dashboards'],
-      },
-      {
         title: 'Business Automation',
-        desc: 'Attendance systems, reporting automation, operational tracking, accounting tools, and analytics dashboards — we help businesses digitize processes and eliminate manual inefficiencies.',
-        points: ['Attendance & HR systems', 'Accounting tools', 'Operational tracking'],
+        desc: 'Eliminate the repetitive manual work that quietly eats hundreds of hours every month, so your team can focus on what actually moves the business forward.',
+        points: ['Workflow Automation', 'Document Automation', 'Approval Systems'],
+      },
+      {
+        title: 'Customer Experience',
+        desc: 'Give customers a faster, smoother experience across every touchpoint — website, booking, support — so more of them stay, trust you, and buy.',
+        points: ['Websites & Web Apps', 'Mobile Apps', 'Booking & Customer Portals'],
+      },
+      {
+        title: 'Business Management',
+        desc: 'Run every part of your business from one place instead of scattered spreadsheets and chats — full visibility and control, from anywhere.',
+        points: ['ERP & CRM', 'Inventory & Finance', 'HR & Fleet'],
+      },
+      {
+        title: 'AI Solutions',
+        desc: 'Put AI to work so your business keeps responding, selling, and supporting customers around the clock — without hiring more people.',
+        points: ['AI Customer Support', 'AI WhatsApp & Voice', 'AI Sales Assistant'],
+      },
+      {
+        title: 'Business Intelligence',
+        desc: 'Turn the data you already have into clear, real-time answers, so you make better decisions faster and spot problems before they grow.',
+        points: ['Live Dashboards', 'Reports & Analytics', 'Performance Tracking'],
       },
     ],
     extraText: [
-      'At exflow, we build software systems, websites, AI-powered tools, and business automation solutions designed to solve operational challenges and help companies scale faster.',
-      'Technology should increase efficiency, reduce manual work, and create measurable business growth.',
-      "Let's discuss your operational challenges and design a system around your business.",
+      "We don't sell software — we solve business problems. Every system we build is designed to save you time, reduce costs, and help you grow.",
+      'Automation, AI, and management systems that make your business run better and give you room to scale.',
+      "Tell us the problem slowing your business down — we'll design the system that fixes it.",
     ],
   },
   {
@@ -84,54 +70,64 @@ const ROUTES = [
     file: 'IndustriesPage.jsx',
     Page: IndustriesPage,
     eyebrow: 'Industries We Serve',
-    h1: 'Industry-Specific Software, Not Generic Templates.',
-    closingHeading: "Don't see your industry? Talk to us anyway.",
+    h1: 'Helping Businesses Across Industries Grow Through Technology.',
+    closingHeading: "Don't see your industry? Let's talk anyway.",
     enquiryLabel: 'Discuss Your Project',
     cards: [
       {
-        title: 'Logistics & Transportation',
-        desc: 'Fleet monitoring systems, GPS tracking, fuel management, maintenance analytics, and operational dashboards.',
-        points: [],
-      },
-      {
-        title: 'Restaurants & Food Businesses',
-        desc: 'Ordering systems, kitchen workflows, token management, analytics, remote monitoring, and customer experience optimization.',
-        points: [],
-      },
-      {
-        title: 'Scrap & Recycling Industry',
-        desc: 'Digital systems for scrap collection networks, supplier management, aggregation operations, inventory tracking, and marketplace solutions.',
-        points: [],
-      },
-      {
-        title: 'Retail Businesses',
-        desc: 'Billing systems, inventory management, customer analytics, and operational automation.',
-        points: [],
-      },
-      {
-        title: 'Startups',
-        desc: 'Rapid MVP development, scalable web platforms, and technology solutions designed to accelerate growth.',
-        points: [],
-      },
-      {
-        title: 'Enterprises',
-        desc: 'Custom internal software, dashboards, workflow automation, and large-scale digital transformation solutions.',
+        title: 'Education',
+        desc: 'Digital learning, admissions, exams and student management that cut manual work and improve engagement.',
         points: [],
       },
       {
         title: 'Healthcare',
-        desc: 'Operational systems, workflow management, automation tools, and analytics.',
+        desc: 'Operational systems, scheduling and analytics that let teams focus on patients, not paperwork.',
+        points: [],
+      },
+      {
+        title: 'Transport & Logistics',
+        desc: 'Fleet tracking, fuel and route insights, and dashboards that cut losses and keep operations moving.',
+        points: [],
+      },
+      {
+        title: 'Retail',
+        desc: 'Billing, inventory and customer insights that keep stores stocked and customers coming back.',
         points: [],
       },
       {
         title: 'Manufacturing',
-        desc: 'Production tracking, reporting systems, inventory management, and efficiency monitoring.',
+        desc: 'Production tracking, inventory and reporting that improve efficiency on the floor.',
+        points: [],
+      },
+      {
+        title: 'Restaurants',
+        desc: 'Ordering, kitchen and multi-outlet systems that speed up service and sharpen operations.',
+        points: [],
+      },
+      {
+        title: 'Construction',
+        desc: 'Project, resource and site tracking that keep timelines and budgets under control.',
+        points: [],
+      },
+      {
+        title: 'Real Estate',
+        desc: 'Listing, lead and client management that turn enquiries into closed deals.',
+        points: [],
+      },
+      {
+        title: 'Finance',
+        desc: 'Secure workflows, reporting and automation that reduce risk and manual effort.',
+        points: [],
+      },
+      {
+        title: 'Startups',
+        desc: 'Rapid MVPs and scalable platforms built to help you launch fast and grow.',
         points: [],
       },
     ],
     extraText: [
-      'exflow develops solutions designed around operational realities — not cookie-cutter products. Every system we build understands the specific workflows of your industry.',
-      "We've built systems across many sectors. If you have an operational challenge, chances are we can solve it.",
+      'Whatever your industry, the goal is the same — save time, cut costs, serve customers better, and scale. We build technology around how your business actually works.',
+      "We've built systems across very different sectors. If something in your operations is slow, manual, or scattered, there's a good chance we can fix it.",
     ],
   },
 ]

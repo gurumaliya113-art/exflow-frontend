@@ -51,8 +51,7 @@ export const CONTACT = {
 /** Footer brand blurb and conversion CTA label, verbatim from PublicFooter. */
 export const FOOTER_BRAND = {
   name: 'exflow',
-  blurb:
-    'We build software, AI tools, and digital systems that help businesses automate, scale, and grow sustainably.',
+  blurb: 'Building technology that powers modern businesses.',
   ctaLabel: 'Book A Call',
 }
 
