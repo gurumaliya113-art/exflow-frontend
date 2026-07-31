@@ -44,8 +44,8 @@ describe('SiteFooter variant="full"', () => {
     expect(phone).toHaveAttribute('href', 'tel:+918053317489')
     expect(phone.getAttribute('href')).toBe(CONTACT.phone.href)
 
-    const email = screen.getByRole('link', { name: 'business.gurutron@gmail.com' })
-    expect(email).toHaveAttribute('href', 'mailto:business.gurutron@gmail.com')
+    const email = screen.getByRole('link', { name: 'azadgupta1010@gmail.com' })
+    expect(email).toHaveAttribute('href', 'mailto:azadgupta1010@gmail.com')
     expect(email.getAttribute('href')).toBe(CONTACT.email.href)
   })
 

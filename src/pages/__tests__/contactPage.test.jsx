@@ -12,9 +12,9 @@ import { CONTACT } from '@/content/site'
 import ContactPage from '../ContactPage'
 
 /** Baseline destinations and values that must survive the redesign verbatim. */
-const EMAIL_HREF = 'mailto:business.gurutron@gmail.com'
+const EMAIL_HREF = 'mailto:azadgupta1010@gmail.com'
 const TEL_HREF = 'tel:+918053317489'
-const WEBSITE_HREF = 'https://exflow.in'
+const WEBSITE_HREF = 'https://exflow.dpdns.org'
 const OFFICE = 'Kailash Nagar, Narnaul'
 
 const BASELINE_SERVICES = [
@@ -100,7 +100,7 @@ describe('ContactPage preserved destinations', () => {
   it('opens the website in exactly one new context with both safety tokens', () => {
     renderPage()
 
-    const website = screen.getByRole('link', { name: 'exflow.in' })
+    const website = screen.getByRole('link', { name: 'exflow.dpdns.org' })
     expect(website).toHaveAttribute('href', WEBSITE_HREF)
     expect(website).toHaveAttribute('target', '_blank')
 

@@ -12,6 +12,7 @@ import {
   FOOTER_QUICK_LINKS,
   FOOTER_RIGHTS,
   FOOTER_SOLUTION_LINKS,
+  PARENT_COMPANY,
 } from '../../content/site'
 
 /**
@@ -201,7 +202,17 @@ export default function SiteFooter({
         </div>
 
         <div className="mt-[var(--space-7)] flex flex-col items-center justify-between gap-[var(--space-3)] border-t border-line pt-[var(--space-5)] md:flex-row">
-          <CopyrightLine />
+          <div className="flex flex-col items-center gap-[var(--space-1)] md:flex-row md:gap-[var(--space-4)]">
+            <CopyrightLine />
+            <a
+              href={PARENT_COMPANY.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={linkClass}
+            >
+              {PARENT_COMPANY.label}
+            </a>
+          </div>
           <div className="flex gap-[var(--space-4)]">
             {FOOTER_LEGAL_LINKS.map((legal) => (
               <a key={legal.label} href={legal.href} className={linkClass}>
