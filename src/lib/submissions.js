@@ -94,19 +94,60 @@ async function insertRow(table, row) {
 }
 
 /**
- * Submit an enquiry to `enquiries`.
+ * Web3Forms access key. Paste the key you get (free) after registering with
+ * azadgupta1010@gmail.com at https://web3forms.com — every submission is then
+ * emailed straight to that inbox, no backend required. Left empty, email is
+ * skipped and only the Supabase record is written (so tests and dev are
+ * unaffected).
+ */
+export const WEB3FORMS_ACCESS_KEY = '95672216-f949-4727-a357-0c62ba632285'
+
+/**
+ * Best-effort: email the submission to the owner via Web3Forms. Never throws
+ * and never blocks the result — the Supabase insert stays the source of truth.
+ * @param {string} subject
+ * @param {Record<string, any>} fields
+ */
+async function emailToOwner(subject, fields) {
+  if (!WEB3FORMS_ACCESS_KEY || typeof fetch !== 'function') return
+  // Never perform network I/O under test (keeps the submission tests hermetic).
+  if (import.meta.env?.MODE === 'test') return
+  try {
+    await fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({
+        access_key: WEB3FORMS_ACCESS_KEY,
+        subject,
+        from_name: fields.name || 'ExFlow website',
+        ...fields,
+      }),
+    })
+  } catch {
+    /* email is best-effort; a failure here must not affect the submission */
+  }
+}
+
+/**
+ * Submit an enquiry: store in `enquiries` and email the owner.
  * @param {Record<string, any>} values
  * @returns {Promise<{ ok: boolean, error: any }>}
  */
 export async function submitEnquiry(values) {
-  return insertRow(ENQUIRY_TABLE, toEnquiryRow(values))
+  const row = toEnquiryRow(values)
+  const result = await insertRow(ENQUIRY_TABLE, row)
+  await emailToOwner('New ExFlow enquiry', row)
+  return result
 }
 
 /**
- * Submit a partnership interest to `partners`.
+ * Submit a partnership interest: store in `partners` and email the owner.
  * @param {Record<string, any>} values
  * @returns {Promise<{ ok: boolean, error: any }>}
  */
 export async function submitPartnership(values) {
-  return insertRow(PARTNER_TABLE, toPartnerRow(values))
+  const row = toPartnerRow(values)
+  const result = await insertRow(PARTNER_TABLE, row)
+  await emailToOwner('New ExFlow partnership enquiry', row)
+  return result
 }
