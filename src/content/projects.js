@@ -17,6 +17,8 @@ import gurtronImg from '@/assets/portfolio/gurtron.png'
 import fleetImg from '@/assets/portfolio/fleet.png'
 import restaurantImg from '@/assets/portfolio/restaurant.png'
 import policylensImg from '@/assets/portfolio/policylens.png'
+import schoolImg from '@/assets/portfolio/school.png'
+import hotelImg from '@/assets/portfolio/hotel.png'
 
 export const projects = [
   {
@@ -96,6 +98,24 @@ export const projects = [
     tag: 'InsurTech',
     tagColor: '#673AB7',
     link: 'https://policy-lens-gilt.vercel.app/',
+  },
+  {
+    name: 'School Management System',
+    description:
+      'We built a comprehensive school management platform that streamlines academics, administration, and communication in one place. It covers student enrollment, teacher management, timetables, attendance, fees, examinations, library, hostel, transport, and more — giving schools complete control over daily operations through an intuitive, role-based dashboard.',
+    image: schoolImg,
+    gradient: 'linear-gradient(135deg, #1B5E20 0%, #2E7D32 45%, #388E3C 100%)',
+    tag: 'Education',
+    tagColor: '#4CAF50',
+  },
+  {
+    name: 'Hotel Room Management',
+    description:
+      'We developed a full-featured hotel management system built for front desk efficiency. It handles room bookings, guest check-in/check-out, billing, housekeeping, inventory, kitchen orders, and staff management — all in one real-time dashboard that helps hotels run smoother, reduce manual work, and deliver a better guest experience.',
+    image: hotelImg,
+    gradient: 'linear-gradient(135deg, #B71C1C 0%, #C62828 45%, #D32F2F 100%)',
+    tag: 'Hospitality',
+    tagColor: '#FF5722',
   },
 ]
 
