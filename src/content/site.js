@@ -40,10 +40,10 @@ export const LEGACY_NAV = [
  * `href` values are the typed destinations Requirement 2.8 must keep unchanged.
  */
 export const CONTACT = {
-  phone: { label: '+91 80533 1748', href: 'tel:+91805331748' },
+  phone: { label: '', href: '' },
   email: {
-    label: 'azadgupta1010@gmail.com',
-    href: 'mailto:azadgupta1010@gmail.com',
+    label: 'business.gurutron@gmail.com',
+    href: 'mailto:business.gurutron@gmail.com',
   },
   office: { label: 'Office', address: 'Narnaul' },
 }
