@@ -107,6 +107,7 @@ export const projects = [
     gradient: 'linear-gradient(135deg, #1B5E20 0%, #2E7D32 45%, #388E3C 100%)',
     tag: 'Education',
     tagColor: '#4CAF50',
+    link: 'https://school-management-frontend-ten-sigma.vercel.app/#/dashboard',
   },
   {
     name: 'Hotel Room Management',
@@ -116,6 +117,7 @@ export const projects = [
     gradient: 'linear-gradient(135deg, #B71C1C 0%, #C62828 45%, #D32F2F 100%)',
     tag: 'Hospitality',
     tagColor: '#FF5722',
+    link: 'https://hotel-desk.onrender.com/',
   },
 ]
 
