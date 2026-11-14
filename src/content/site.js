@@ -40,12 +40,12 @@ export const LEGACY_NAV = [
  * `href` values are the typed destinations Requirement 2.8 must keep unchanged.
  */
 export const CONTACT = {
-  phone: { label: '+91 80533 17489', href: 'tel:+918053317489' },
+  phone: { label: '+91 80533 1748', href: 'tel:+91805331748' },
   email: {
     label: 'azadgupta1010@gmail.com',
     href: 'mailto:azadgupta1010@gmail.com',
   },
-  office: { label: 'Office', address: 'Kailash Nagar, Narnaul' },
+  office: { label: 'Office', address: 'Narnaul' },
 }
 
 /** Footer brand blurb and conversion CTA label, verbatim from PublicFooter. */
